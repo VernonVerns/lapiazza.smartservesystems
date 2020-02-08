@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title></title>
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/w3.css">
+    <link rel="stylesheet" type="text/css" href="css/animate.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="css/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <style type="text/css">
+		#mainMenu {
+			margin-top: 80px;
+			padding-right: 5%;
+			padding-left: 5%;
+		}
+
+        #mainMenu ul.main-categs {
+            overflow-x: scroll;
+            overflow-y: hidden;
+            padding-bottom: 10px;
+        }
+
+        /* width */
+        #mainMenu ul.main-categs::-webkit-scrollbar {
+          height: 10px;
+        }
+
+        /* Track */
+        #mainMenu ul.main-categs::-webkit-scrollbar-track {
+          background: #fff; 
+        }
+         
+        /* Handle */
+        #mainMenu ul.main-categs::-webkit-scrollbar-thumb {
+          background: #888; 
+        }
+
+        /* Handle on hover */
+        #mainMenu ul.main-categs::-webkit-scrollbar-thumb:hover {
+          background: #555; 
+        }
+
+		#mainMenu ul.main-categs li a {
+			border-radius: 0 !important;
+			background-color: #e7e7e7;
+			width: 220px;
+			color: #222;
+		}
+
+		#mainMenu ul.main-categs li a:active {
+			background-color: #336699;
+			transition: .5s;
+		}
+
+		#mainMenu ul.main-categs li a:fucus {
+			background-color: #336699;
+			transition: .5s;
+		}
+
+		#mainMenu ul.main-categs li a:hover {
+			background-color: #b3b3b3;
+			transition: .5s;
+		}
+
+		#mainMenu .tab-content .sub-categs {
+			margin-top: 20px;
+			width: 60%;
+			text-align: center;
+		}
+
+		#mainMenu .tab-content .sub-categs ul {
+			margin-left: 30%;
+		}
+
+		#mainMenu .tab-content .sub-categs ul li a {
+			color: #222;
+			width: 200px;
+		}
+
+		#mainMenu .tab-content .sub-categs ul li a:active {
+			background-color: transparent !important;
+		}
+	</style>
+</head>
+<body>
+	<div id="loader">
+        <div>
+            <!-- Loading wheel for when something is happening or page is loading -->
+        </div>
+    </div>
+	<div id="ss_nav">
+        <nav class="navbar navbar-fixed-top w3-card">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                    <li><a onclick="history.back(-1)" ><i class="fa fa-arrow-left"></i>Back</a></li>  
+                </ul>
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                        <i class="fa fa-bars fa-2x"></i> 
+                    </button>
+                    <div class="navbar-brand"><a class="">SmartServe</a></div>
+                </div>
+                <div class="collapse navbar-collapse" id="myNavbar">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#" class="items"><span id="total_qty_home"></span> Items: R<span id="total_home"></span></a></li>
+                        <li><a href="pages/cart.html" class="checkoutBTN">Checkout</a></li>  
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+	<div id="mainMenu">
+		<ul class="nav main-categs nav-pills nav-justified" id="main_cats">
+			<!-- Do not delete... used for main catagories -->
+		</ul>
+
+		<div id="test">
+			
+		</div>
+		<div class="tab-content">
+			<div class="sub-categs">
+				<div class="tab-pane fade in active" id="cate1" role="tabpanel" aria-labelledby="home-tab">
+					<ul class="nav nav-pills nav-justified" id="sub_cats">
+						<!-- Do not delete... used for sub catagories -->
+					</ul>
+
+					<div class="tab-content" id="home_page">
+						<div class="tab-pane fade in active" id="sub1" role="tabpanel">
+							<div class="summarized-menu">
+								<div class="container">
+									<div class="row" id="item_container">
+					            		<!-- Do not delete... used for items/dishes -->
+                          			</div>
+                      			</div>
+					        </div>
+					    </div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	    
+	<script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-firestore.js"></script>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script src="js/alime.bundle.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/default-assets/active.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="model/functions.js"></script>
+</body>
+</html>

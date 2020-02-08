@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Table <#> Order(s)</title>
+    
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../css/w3.css">
+    <link rel="stylesheet" type="text/css" href="../css/animate.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../css/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <style type="text/css">
+        body {
+            padding-top: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div id="loader">
+        <div>
+            <!-- Loading wheel for when something is happening or page is loading -->
+        </div>
+    </div>
+    <div id="ss_nav_2">
+        <nav class="navbar navbar-fixed-top">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                    <li><a href="kitchenWaiters.html" onclick="history.back(-1)" ><i class="fa fa-arrow-left"></i>Back</a></li>  
+                </ul>
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle d-block" data-toggle="collapse" data-target="#myNavbar">
+                        <i class="fa fa-bars fa-2x"></i> 
+                    </button>
+                    <div class="navbar-brand"><a href="#" class="">SmartServe</a></div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <section id="table_orders">
+        <div class="row">
+            <div class="col-sm-6 pending-items-side scrollbar border-right">
+                <h2 class="w3-center caption">Pending Items</h2>
+                <div class="pending-item">
+                    <!-- Loading Pending items -->
+                </div>
+            </div>
+
+            <!-- Served items here -->
+            <div class="col-sm-6 scrollbar served-items-side">
+                <h2 class="w3-center caption">Served Item</h2>
+
+                <div class="served-items">
+                    <!-- Loading served items -->
+                </div>
+            </div>
+        </div>
+
+        <!-- The Modal -->
+        <div id="authModal" class="authModal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="authClose">&times;</span>
+                    <h3>Enter your Employee Number</h3>
+                </div>
+                <div class="modal-body">
+                    <input type="password" placeholder="Employee number" name="employee" id="empl_number">
+                    <button id="verify_employee">Verify</button>
+                </div>
+            </div>
+        </div>
+        <div id="voiding" class="modal">
+            <div class="modal-content-1">
+                <span class="close">&times;</span>
+                <div class="w3-row">
+                    <div class="w3-col w3-center" style="width: 50%">
+                        <button type="button" id="serve_item">Serve</button>
+                    </div>
+                    <div class="w3-col w3-center" style="width: 50%">
+                        <button type="button" id="void_item">Void</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-firestore.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.5/js/swiper.min.js'></script>
+    <script type="text/javascript" src="../js/main.js"></script>
+    <script type="text/javascript" src="../model/functions.js"></script>
+</body>
+</html>

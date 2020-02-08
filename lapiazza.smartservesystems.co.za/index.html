@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>SmartServe | Waiter Screen</title>
+	
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/w3.css">
+    <link rel="stylesheet" type="text/css" href="css/animate.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="css/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+      }
+    </style>
+</head>
+<body>
+    <div id="ss_nav_2">
+        <nav class="navbar navbar-fixed-top">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle d-block" data-toggle="collapse" data-target="#myNavbar">
+                        <i class="fa fa-bars fa-2x"></i> 
+                    </button>
+                    <div class="navbar-brand"><a class="">SmartServe</a></div>
+                </div>
+                <div class="collapse navbar-collapse" id="myNavbar">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="pages/posHome.html">Payments</a></li> 
+                        <li><a href="home.html">New Order</a></li> 
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+	<section id="kitchen_orders">
+		<div class="main_section">
+	    	<div id="waiter_order_items">
+	    		<!-- Do not delete... used to display orders to waiters -->
+	    	</div>
+    	</div>
+    	<!-- The Modal -->
+		<div id="authModal" class="authModal">
+  			<!-- Modal content -->
+  			<div class="modal-content">
+  				<div class="modal-header">
+    				<span class="authClose">&times;</span>
+    				<h3>Enter your Employee Number</h3>
+                    <h5 id="auth_error" style="display: none; color: #f0ff00; margin-bottom: 0;">
+                        Authorisation failed, Please Try again!
+                    </h5>
+  				</div>
+  				<div class="modal-body">
+    				<input type="text" placeholder="Employee number" name="employee" id="empl_number">
+				    <button id="verify_employee">Verify</button>
+		 		</div>
+			</div>
+		</div>
+    </section>
+    <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-firestore.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.5/js/swiper.min.js'></script>
+    <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="model/functions.js"></script>
+</body>
+</html>

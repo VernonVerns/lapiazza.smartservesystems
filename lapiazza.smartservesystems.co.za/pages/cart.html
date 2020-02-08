@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    
+    <title>SmartServe | Cart</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../css/w3.css">
+    <link rel="stylesheet" type="text/css" href="../css/animate.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../css/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+    <div id="loader">
+        <div>
+            <!-- Loading wheel for when something is happening or page is loading -->
+        </div>
+    </div>
+    <div id="ss_nav">
+        <nav class="navbar navbar-fixed-top w3-card">
+            <div class="container-fluid">
+                <ul class="nav navbar-nav">
+                    <li><a onclick="history.back(-1)" ><i class="fa fa-arrow-left"></i>Back</a></li>  
+                </ul>
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                        <i class="fa fa-bars fa-2x"></i> 
+                    </button>
+                    <div class="navbar-brand"><a style="color: #fff;">SmartServe</a></div>
+                </div>
+                <div class="collapse navbar-collapse" id="myNavbar">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a class="items"><span id="total_qty_home"></span> Items: R<span id="total_home"></span></a></li>
+                        <li><a class="cancelOderBTN" id="confirmCancel">Cancel</a></li>
+                        <li><a href="kitchenWaiters.html" class="placeOrderBTN" id="place_order">Place Order</a></li>  
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- The Cancel Modal -->
+    <div id="cancelModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="close_cancel">&times;</span>
+            <div class="row">
+                <h3>Are you sure you want to cancel the order?</h3>
+            </div>
+            <div class="confirm-btns">
+                <button type="button" class="btn yesBtn" id="yes_cancel">Yes</button>
+                <button type="button" class="btn closeBtn" id="no_cancel">No</button>
+            </div>
+        </div>
+    </div>
+
+    <section id="ss_cart">
+        <div class="row">
+            <div class="col-sm-8">
+                <div class="order-side">
+                    <div class="table-number">
+                        <div class="form-group">
+                            <label for="tableNumber" style="margin-left: 2px;">Select Table Number:</label>
+                            <select class="form-control" id="table_number" style="width: 50%;">
+                                <option selected disabled>- Table Number -</option>
+                            </select>
+                        </div>
+                    </div>
+                    <a id="cart_container">
+                        <!-- Do not delete...  -->
+                    </a>
+                </div>
+            </div>
+            <!-- The Modal -->
+            <div id="authModal" class="authModal">
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="authClose">&times;</span>
+                        <h3>Enter your Employee Number</h3>
+                    </div>
+                    <div class="modal-body">
+                        <h5 id="auth_error" style="display: none;">
+                            Verification failed. Please try again.
+                        </h5>
+                        <input type="password" placeholder="Employee number" name="employee" id="empl_number">
+                        <button id="verify_employee">Verify</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-firestore.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.5/js/swiper.min.js'></script>
+    <script type="text/javascript" src="../js/main.js"></script>
+    <script type="text/javascript" src="../model/functions.js"></script>
+</body>
+
+</html>

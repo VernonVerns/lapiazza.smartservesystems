@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>SmartServe | POS</title>
+	
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../css/w3.css">
+    <link rel="stylesheet" type="text/css" href="../css/animate.css">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="../css/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <style type="text/css">
+        body {
+            padding-top: 50px;
+            overflow: hidden !important;  
+        }
+        #pos_h_orders, #pos_h_detail, #pos_h_input
+        {
+           overflow-y: scroll !important;
+           height: calc(100vh - 50px);
+        }
+        .full_height {
+          height: 100%;
+          background: yellow;
+          display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="loader">
+        <div>
+            <!-- Loading wheel for when something is happening or page is loading -->
+        </div>
+    </div>
+    <section id="not_print">
+        <div class="full_height smart_loader">Please wait, proccessing request!</div>
+        <div class="smart_main_container">
+            <div id="ss_nav_2">
+                <nav class="navbar navbar-fixed-top">
+                    <div class="container-fluid">
+                    <ul class="nav navbar-nav">
+                        <li><a onclick="history.back(-1)" ><i class="fa fa-arrow-left"></i>Back</a></li>  
+                    </ul>
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle d-block" data-toggle="collapse" data-target="#myNavbar">
+                                <i class="fa fa-bars fa-2x"></i> 
+                            </button>
+                            <div class="navbar-brand"><a href="kitchenWaiters.html" class="">SmartServe</a></div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+    
+            <section id="pos_home">
+    
+            
+            <section id="pos_h_detail">
+                <div id="pos_selected_order">
+                    <!-- diplay the selected order to pay for -->
+                </div>
+
+                <div class="amounts-perItem w3-card">
+                    <div class="phdPaid">
+                        <h3>Paid</h3>
+                        <h3 class="toRight">R<span id="phd_paid">00.00</span></h3>
+                    </div>
+                    <div class="waiterTip w3-right">
+                        <h3>Tip</h3>
+                        <p class="toRight"><input id="tip_input" type="number" name="tip" placeholder="R0.00"></p>
+                    </div>
+                    <div class="phdBallance">
+                        <h3>Balance</h3>
+                        <p class="toRight"><input id="phd_ballance" type="number" name="balance" placeholder="R0.00"></p>
+                    </div>
+                    <div class="phdChange">
+                        <h3>Change</h3>
+                        <h3 class="toRight">R<span id="phd_change">00.00</span></h3>
+                    </div>         
+                </div>
+                
+            </section>
+    
+            <section id="pos_h_input">
+                <div class="w3-row">
+                    <div class="w3-col" style="width: 60%;">
+                        <div class="phiAmount">
+                            <!-- display entered ammount -->
+                            <h4>R</h4>
+                            <input type="number" name="amount_entered" id="amount_entered" value="0.00"/>
+                        </div>
+                        <!-- payment buttons etc -->
+                        <div id="pos_keypad">
+                            <!-- currency buttons -->
+                            <div class="keypadBtn ss_btn"><h4>5c</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>10c</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>20c</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>50c</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>R1</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>R2</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>R5</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>R10</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>R20</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>R50</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>R100</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>R200</h4></div>
+                        </div>
+                        <div class="posKeypad">
+                            <div class="keypadBtn ss_btn"><h4>1</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>2</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>3</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>4</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>5</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>6</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>7</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>8</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>9</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>0</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>00</h4></div>
+                            <div class="keypadBtn ss_btn"><h4>.</h4></div>          
+                        </div>
+                        <div class="phiMethodBtn">
+                            <h1>Cash</h1>
+                            <h1>Voucher</h1>
+                            <h1>Card</h1>
+                        </div>
+                    </div>
+                    <div class="w3-col w3-center" style="width: 40%;">
+                        <div class="right-btns" id="side_buttons">
+                            <div class="delBtn rbtn"><h4>Del</h4></div>
+                            <div class="clearBtn rbtn"><h4>Clear</h4></div>
+                            <div class="printBill rbtn"><h4>Print Bill</h4></div>
+                            <div class="print1Receipt rbtn"><h4>Print 1 Receipt</h4></div>
+                            <div class="print2Receipt rbtn"><h4>Print 2 Receipts</h4></div>
+                            <div class="doneBtn rbtn"><h4>Done</h4></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- The Modal -->
+            <div id="authModal" class="authModal">
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <span class="authClose">&times;</span>
+                        <h3>Enter your Employee Number</h3>
+                    </div>
+                    <div class="modal-body">
+                        <h5 id="auth_error" style="display: none;">
+                            Verification failed. Please try again.
+                        </h5>
+                        <input type="password" placeholder="Employee number" name="employee" id="empl_number">
+                        <button id="verify_employee">Verify</button>
+                    </div>
+                </div>
+            </div>
+            </section>
+            </div>
+        </section>
+            <div class="bill-print" style="width: 330px; padding: 0.3em; display: none;">
+                <div class="header w3-center ss-b-mr">
+                    <img src="../img/logo.jpg" alt="la piazza logo">
+                    <div class="contacts">
+                        <h2>Mthatha</h2>
+                        <p style="margin-bottom: 0;">36 Delville Rd, 5100</p>
+                        <p>Tel: 047 531 2914</p>
+                    </div>
+                </div>
+                <div class="name-and-date">
+                    -----------------------------------------------------------<br>
+                    <span id="bill_waiter"></span><span id="bill_date" class="w3-right ss-b-mr"></span><br>
+                    -----------------------------------------------------------<br>
+                </div>
+                <h3 class="bill-table w3-center"></h3>
+                <div class="bill-items">
+                    <!-- Loading bill items -->
+                </div>
+                <div class="bill-amounts">
+                    <h4>Total:<span id="bill_total" class="w3-right ss-b-mr"></span></h4>
+                    <h4>Tip:<span class="receiptTip w3-right ss-b-mr">______________</span></h4>
+                    <h4>To Pay:<span class="w3-right ss-b-mr">______________</span></h4>
+                </div>
+                <div class="bill-footer ss-b-mr">
+                    <p class="w3-center">
+                        Thank you for dinning at La Piazza Restaurant.
+                    </p>
+                </div>
+            </div>
+    
+    <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-firestore.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.5/js/swiper.min.js'></script>
+    <script type="text/javascript" src="../js/main.js"></script>
+    <script type="text/javascript" src="../js/moment.min.js"></script>
+    <script type="text/javascript" src="../js/moment.min.js"></script>
+    <script type="text/javascript" src="../model/functions.js"></script>
+</body>
+</html>
