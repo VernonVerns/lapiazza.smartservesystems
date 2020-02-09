@@ -1750,6 +1750,8 @@
 #table_orders .served-items .item .name-and-price {
 	display: block;
 	width: 100%;
+	padding-top: 8px;
+	color: #000;
 }
 
 #table_orders .pending-item .name-and-price h2,
@@ -1785,6 +1787,7 @@
 	margin: 10px 0 0 0;
 	padding: .5em;
 	color: #fff;
+	font-weight: bold;
 	background-color: #336699;
 }
 
@@ -1850,6 +1853,7 @@
 
 .active-status {
 	background-color: #fff !important;
+	font-weight: normal !important;
 	color: #000 !important;
 	border-top: 1px solid #336699;
 }
@@ -1884,8 +1888,7 @@
 }
 
 #kitchen_order_items .order .time {
-	background-color: #fff;
-	color: #336699;
+	color: #000;
 	font-weight: bolder;
 	font-size: 16px;
 }
@@ -1893,6 +1896,7 @@
 #kitchen_order_items .item .name-and-price {
 	display: block;
 	width: 100%;
+	color: #000;
 }
 
 #kitchen_order_items .item .name-and-price h2 {
@@ -1903,7 +1907,7 @@
 #kitchen_order_items .item .note-to-chef {
 	font-size: 12px;
 	margin-left: 20px;
-	color: #777;
+	color: #000;
 }
 
 #kitchen_order_items .kitchen-progress-btn {

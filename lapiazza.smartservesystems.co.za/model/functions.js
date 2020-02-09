@@ -835,12 +835,14 @@ function prepareKitchenOrders(parent){
           note = "";
          }
          var itemStatus = item.itemStatus;
+         var bgColor = "#fff";
           if (itemStatus == 1) {
             status = "Preparing";
           }else {
+            bgColor = "#e3d059";
             status = "Ready";
           }
-         var itemHtml = '<div class="order">\
+         var itemHtml = '<div class="order" style="background-color: '+bgColor+'">\
                           <div class="w3-row">\
                             <span id="'+doc.id+''+i+'time" class="time w3-left"></span>\
                             <div class="kitchen-progress-btn">\
@@ -969,8 +971,12 @@ function prepareWaiterTables(){
             break;
         }
       }
+      var style = "";
+      if (ready > 0) {
+        style = 'style="background-color: #4CAF50"';
+      }
       var html = '<div class="col-sm-3">\
-                      <div class="table">\
+                      <div class="table" '+style+'>\
                         <div class="name-and-table"><span>'+waiterName+'</span><span class="w3-right">T'+table+'</span></div>\
                         <div class="status-and-totals w3-center">\
                           <h2 class="status ready">'+ready+' Ready</h2>\
@@ -1146,7 +1152,7 @@ function addRequestItems(items, dates){
               TableOrder
 =======================================*/
 function loadOrderDetails(){
-  $('.pending-item').empty();
+  $('.pending-items-side').not(':first').empty();
   $('.served-items').empty();
   var id = sessionStorage.getItem("selectedTableId");
   db.collection("Orders").doc(id).get().then((doc) =>{
@@ -1180,6 +1186,12 @@ function loadOrderDetails(){
         var note = item.note;
         var subTotal = item.subTotal;
         var status = item.itemStatus;
+        var bgColor = "#fff";
+        if (status == 2) {
+          bgColor = "#e3d059";
+        }else if (status == 3) {
+          bgColor = "#77e079";
+        }
         var inActive = "active-status";
         var received = "";
         var preparing = "";
@@ -1198,25 +1210,27 @@ function loadOrderDetails(){
             received = inActive;
             break;
         }
-        var html = '<div id="voiding_item">\
-                    <div class="item" style="margin-bottom: 20px;">\
+        var html = '<div class="pending-item">\
+                      <div id="voiding_item" style="background-color: '+bgColor+'">\
+                      <div class="item" style="margin-bottom: 10px;">\
                         <div class="name-and-price">\
                             <h2><span id="qty">'+qty+'</span> x <span id="name">'+name+'</span> <span id="price" class="w3-right">R'+subTotal+'</span></h2> \
                         </div>\
                         <div class="note-to-chef">'+note+'</div>\
-                        <div class="orderProgress">\
+                        <div class="orderProgress" style="background-color: '+bgColor+';">\
                             <p id="index" hidden>'+i+'</p>\
                             <h4 class='+received+' id="received">Received</h4>\
                             <h4 class='+preparing+' id="in_progress">Preparing</h4>\
                             <h4 class='+ready+' id="served">Ready</h4>\
                             <p id="order_id" hidden>'+id+'</p>\
                         </div>\
+                      </div>\
                     </div>\
                     </div>';
-        $('.pending-item').append(html);
+        $('.pending-items-side').append(html);
       }
     }else{
-      $('.pending-item').append('<h2>No items pending</h2>');
+      $('.pending-items-side').append('<h2>No items pending</h2>');
     }
   });
 
@@ -1246,7 +1260,13 @@ function loadOrderDetails(){
             modal.style.display = "none";
           }
         }
-    
+  });
+
+  $('#void_table').on('click', function(){
+    isAdminCheck = true;
+    authRun = voidTable;
+    authModal.style.display = "block";
+    $('#empl_number').focus();
   });
 
   $('#serve_item').on('click', function(){
@@ -1317,7 +1337,11 @@ function voidItem (voider){
     }else{
       alert("Something went wrong!");
     }
-  }
+}
+
+function voidTable(voider){
+  console.log("Delete the table after authentication and adding to voids");
+}
 
 /*======================================
               POS Page
@@ -2166,7 +2190,7 @@ $('#verify_employee').on('click', function(){
         authRun(userSigned);
         break;
       case voidItem:
-        if (userSigned == "Admin") {
+        if (userSigned == "Admin" || userSigned == "Supervisor") {
           var name = employee.name;
           authRun(name);
         }
