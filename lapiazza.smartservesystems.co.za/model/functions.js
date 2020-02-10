@@ -10,6 +10,7 @@ var orderHistory = [];
 var currentOrder = null;
 var clickedPending = null;
 var selectedTable = null;
+var voidingTable = null;
 var previousTip = 0;
 var tip = 0;
 var requestItems = [];
@@ -1155,7 +1156,9 @@ function loadOrderDetails(){
   $('.pending-items-side').not(':first').empty();
   $('.served-items').empty();
   var id = sessionStorage.getItem("selectedTableId");
+  var selectdOrder = null;
   db.collection("Orders").doc(id).get().then((doc) =>{
+    selectdOrder = doc.data();
     var pendingItems = doc.get("pendingItems");
     var servedItems = doc.get("servedItems");
     selectedTable = doc.get("table");
@@ -1263,6 +1266,12 @@ function loadOrderDetails(){
   });
 
   $('#void_table').on('click', function(){
+    if (selectdOrder == null) {
+      showSnackbar("Table not selected properly, void canceled");
+      return;
+    }
+    voidingTable = selectdOrder;
+    voidingTable.id = id;
     isAdminCheck = true;
     authRun = voidTable;
     authModal.style.display = "block";
@@ -1318,7 +1327,6 @@ function voidItem (voider){
         var ballance = doc.get("ballance");
         total = (+total - +price).toFixed(2);
         ballance = (+ballance - +price).toFixed(2);
-        console.log(pendingItems[index]);
         pendingItems.splice(index, 1);
         db.collection("Orders").doc(id).update({pendingItems: pendingItems, total: total, ballance: ballance});
       }).then(function(){
@@ -1340,7 +1348,35 @@ function voidItem (voider){
 }
 
 function voidTable(voider){
-  console.log("Delete the table after authentication and adding to voids");
+  var servedItems = voidingTable.servedItems;
+  var pendingItems = voidingTable.pendingItems;
+  if (servedItems != null && servedItems.length > 0) {
+    showSnackbar("This table has served items, Unable to void table\n Please Close the table from POS");
+    return;
+  }
+  showLoader();
+  for (var i = pendingItems.length - 1; i >= 0; i--) {
+    var item = pendingItems[i];
+    var name = item.name;
+    var qty = item.quantity;
+    var id = voidingTable.id;;
+    var selectedTable = voidingTable.table;
+    db.collection("LaPiazzaVoids").doc().set({
+      itemName: name,
+      quantity: qty,
+      orderId: id,
+      time: firebase.firestore.Timestamp.fromDate(new Date()),
+      TableNumber: selectedTable,
+      authorisedBy: voider
+    });
+  }
+
+  setTimeout(function(){
+    db.collection("Orders").doc(voidingTable.id).delete().then(function(){
+      hideLoader();
+      window.location.href = "kitchenWaiters.html";
+    }, 3000);
+  });
 }
 
 /*======================================
@@ -1775,6 +1811,9 @@ function loadSalesPage(userSigned) {
     .get().then((querySnapshot) =>{
       $('#n_tables_served').text(querySnapshot.size);
       var dailyTotal = 0;
+      var cash = 0;
+      var card = 0;
+      var voucher = 0;
       var soldItems = [];
       $('#sales_per_table').empty();
       querySnapshot.forEach((doc) =>{
@@ -1782,6 +1821,21 @@ function loadSalesPage(userSigned) {
         var total = doc.get("total");
         var paid = doc.get("paid");
         var tip = doc.get("tip");
+        var payments = doc.get("payments");
+        for (var i = payments.length - 1; i >= 0; i--) {
+          var payment = payments[i];
+          switch(payment.method){
+            case "Cash":
+            	cash = (+cash + +payment.amount).toFixed(2);
+            	break;
+            case "Card":
+            	card = (+card + +payment.amount).toFixed(2);
+            	break;
+            case "Voucher":
+            	voucher = (+voucher + +payment.amount).toFixed(2);
+            	break;
+          }
+        }
         if (tip == null) {
           tip = 0;
         }
@@ -1804,14 +1858,13 @@ function loadSalesPage(userSigned) {
                               <td colspan="3">Total of Items</td>\
                               <td>R'+total+'</td>\
                             </tr>\
-                            <!-- total amount paid by the customer -->\
-                            <tr style="font-weight: bolder;">\
-                              <td colspan="3">Total Paid</td>\
-                              <td>R'+paid+'</td>\
-                            </tr>\
                             <tr style="font-weight: bolder;">\
                               <td colspan="3">Tip</td>\
                               <td>R'+tip+'</td>\
+                            </tr>\
+                            <tr style="font-weight: bolder;">\
+                              <td colspan="3">Total Paid</td>\
+                              <td>R'+paid+'</td>\
                             </tr>\
                           </tbody>\
                         </table>';
@@ -1853,6 +1906,18 @@ function loadSalesPage(userSigned) {
                       </tr>'
         $('#waiter_sales_table tr:last').before(saleRow);
       }
+      if (cash > 0) {
+      	var html = addPaymentMethod("Cash", cash);
+      	$('#waiter_sales_table tr:last').before(html);
+      }
+      if (card > 0) {
+      	var html = addPaymentMethod("Card", card);
+      	$('#waiter_sales_table tr:last').before(html);
+      }
+      if (voucher > 0) {
+      	var html = addPaymentMethod("Voucher", voucher);
+      	$('#waiter_sales_table tr:last').before(html);
+      }
       $('#waiter_total').text(dailyTotal);
     });
     $('#waiters_list').children('li').removeClass("active-tab");
@@ -1867,6 +1932,14 @@ function loadSalesPage(userSigned) {
   $('#save_pdf').on('click', function(){
     monthlySalePdf();
   });
+}
+
+function addPaymentMethod(method, amount){
+	var html = '<tr style="font-weight: bolder;">\
+                <td colspan="3">'+method+' Paid</td>\
+                <td>R'+amount+'</td>\
+              </tr>';
+  return html;
 }
 
 function AdminReports(){
@@ -2195,6 +2268,12 @@ $('#verify_employee').on('click', function(){
           authRun(name);
         }
         break;
+      case voidTable:
+        if (userSigned == "Admin" || userSigned == "Supervisor") {
+          var name = employee.name;
+          authRun(name);
+        }
+        break;
     }
     authModal.style.display = "none";
   }
@@ -2265,6 +2344,19 @@ function uncheckBox(){
   for (var i = boxes.length - 1; i >= 0; i--) {
     $(boxes[i]).attr('checked', false);
   }
+}
+
+function showSnackbar(text){
+  var snackbarHtml = '<div id="snackbar">'+text+'</div>';
+  if ($('body').find('#snackbar').length == 0) {
+    $('body').append(snackbarHtml);
+  }
+
+  var x = document.getElementById("snackbar");
+
+  x.className = "show";
+
+  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
 }
 
 /*=====================================
