@@ -973,7 +973,7 @@ function prepareWaiterTables(){
       }
       var style = "";
       if (ready > 0) {
-        style = 'style="background-color: #4CAF50"';
+        style = 'style="background-color: #28a745"';
       }
       var html = '<div class="col-sm-3">\
                       <div class="table" '+style+'>\
@@ -1190,7 +1190,7 @@ function loadOrderDetails(){
         if (status == 2) {
           bgColor = "#e3d059";
         }else if (status == 3) {
-          bgColor = "#77e079";
+          bgColor = "#28a745";
         }
         var inActive = "active-status";
         var received = "";
