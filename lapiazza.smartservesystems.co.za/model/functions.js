@@ -1225,7 +1225,7 @@ function loadOrderDetails(){
                             <h2><span id="qty">'+qty+'</span> x <span id="name">'+name+'</span> <span id="price" class="w3-right">R'+subTotal+'</span></h2> \
                         </div>\
                         <div class="note-to-chef">'+note+'</div>\
-                        <div class="orderProgress" style="background-color: '+bgColor+';">\
+                        <div class="orderProgress" style="background-color: '+bgColor+'; padding: 5px;">\
                             <p id="index" hidden>'+i+'</p>\
                             <h4 class='+received+' id="received">Received</h4>\
                             <h4 class='+preparing+' id="in_progress">Preparing</h4>\
