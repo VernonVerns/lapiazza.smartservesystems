@@ -946,7 +946,6 @@ function prepareWaiterTables(){
   .onSnapshot(function(querySnapshot) {
     $('#table_row').empty();
     var previouslyReady = JSON.parse(localStorage.getItem("readyOrders"));
-    console.log(previouslyReady);
   	if (previouslyReady == null) {
   		previouslyReady = [];
  		}
@@ -1255,7 +1254,7 @@ function loadOrderDetails(){
     }
   });
 
-  $('.pending-item').on('click', '#voiding_item', function(e){
+  $('.pending-items-side').on('click', '#voiding_item', function(e){
     var name = $(this).find('#name')[0].innerHTML;
     var qty = $(this).find('#qty')[0].innerHTML;
     var orderId = $(this).find('#order_id')[0].innerHTML;
@@ -1531,7 +1530,7 @@ function loadPos(){
       alert("Please enter amount to make a payment.");
     }else{
       showLoader();
-      if (amount < ballance) {
+      if (parseFloat(amount) < parseFloat(ballance)) {
         var newPayment = {method: method, amount: amount};
         if (payments == null) {
           payments = [];
@@ -1541,9 +1540,6 @@ function loadPos(){
         }
         var isPaid = false;
         ballance = (+ballance - +amount).toFixed(2);
-        if (ballance < 0) {
-        	ballance = 0;
-        }
         var change = (0).toFixed(2);
         paid = (+paid + +amount).toFixed(2);
         db.collection("Orders").doc(orderId)
@@ -1970,9 +1966,9 @@ function AdminReports(){
   var n = ad.getMonth();
   var today = ad.getDate();
   dailySales(today, today+1);
-  loadVoids(today, today+1);
   monthlySales(n);
   waiterSales();
+  loadVoids();
 }
 
 function supervisorReports(){
@@ -2122,7 +2118,7 @@ function waiterSales(){
   });
 }
 
-function loadVoids (start, end){
+function loadVoids(){
   var date = new Date(), y = date.getFullYear(), m = date.getMonth();
   var startDate = new Date(y, m, 1);
   var endDate = new Date(y, (+m + 1), 0);
@@ -2131,7 +2127,7 @@ function loadVoids (start, end){
     table.deleteRow(1);
   }
   db.collection("LaPiazzaVoids").where("time", ">", startDate).where("time", "<", endDate)
-  .orderBy("time", "asc").onSnapshot(function(querySnapshot) {
+  .orderBy("time", "desc").onSnapshot(function(querySnapshot) {
     querySnapshot.forEach((doc) =>{
       var name = doc.get("itemName");
       var qty = doc.get("quantity");
