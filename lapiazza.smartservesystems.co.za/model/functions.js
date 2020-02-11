@@ -119,7 +119,7 @@ window.onload = function(){
         loadOrderHistory();
       break;
     case "kitchenWaiters.html":
-        loadWaiters();
+        activateWaiters();
       break;
     case "kitchen.html":
         loadKitchen();
@@ -620,7 +620,6 @@ function resetOrderNumber(){
 /*======================================
               Order History
 =======================================*/
-
 function loadOrderHistory(){
   prepareOrderHistory();
   //Repeat an order from order history
@@ -795,9 +794,13 @@ function prepareKitchenOrders(parent){
     }
     var orderItems = [];
     var dates = [];
-    querySnapshot.forEach((doc) =>{
-      var status = doc.get("isTableOpen");
-      var items = doc.get("pendingItems");
+    querySnapshot.docChanges().forEach((change) =>{
+    	if (change.type == "added") {
+    		playSound("pages");
+    	}
+    	var doc = change.doc.data();
+      var status = doc.isTableOpen;
+      var items = doc.pendingItems;
       var unReadyItems = [];
       for (var i = items.length - 1; i >= 0; i--) {
         var checkItem = items[i];
@@ -806,13 +809,13 @@ function prepareKitchenOrders(parent){
         }
       }
       if (unReadyItems.length > 0) {
-        var orderNumber = doc.get("number");
-        var table = doc.get("table");
-        var note = doc.get("note");
+        var orderNumber = doc.number;
+        var table = doc.table;
+        var note = doc.note;
         if (note == null) {
           note = "";
         }
-        var waiterName = doc.get("servedBy");
+        var waiterName = doc.servedBy;
         if (waiterName == null) {
           waiterName = "Unattended";
         }
@@ -901,6 +904,15 @@ function addItemsKitchen(parent, items, dates){
 /*======================================
               Waiters page
 =======================================*/
+function activateWaiters(){
+	$('#odering_tables').hide();
+	$('#activate_sound_btn').on('click', function(){
+		$('#activate_sound_div').hide();
+		$('#odering_tables').show();
+		loadWaiters();
+	});
+}
+
 function loadWaiters(){
   var parent = $('#waiter_order_items');
   localStorage.setItem("isNewOrder", true);
@@ -975,6 +987,7 @@ function prepareWaiterTables(){
       var style = "";
       if (ready > 0) {
         style = 'style="background-color: #28a745"';
+        playSound("pages");
       }
       var html = '<div class="col-sm-3">\
                       <div class="table" '+style+'>\
@@ -1822,19 +1835,21 @@ function loadSalesPage(userSigned) {
         var paid = doc.get("paid");
         var tip = doc.get("tip");
         var payments = doc.get("payments");
-        for (var i = payments.length - 1; i >= 0; i--) {
-          var payment = payments[i];
-          switch(payment.method){
-            case "Cash":
-            	cash = (+cash + +payment.amount).toFixed(2);
-            	break;
-            case "Card":
-            	card = (+card + +payment.amount).toFixed(2);
-            	break;
-            case "Voucher":
-            	voucher = (+voucher + +payment.amount).toFixed(2);
-            	break;
-          }
+        if (payments != null) {
+        	for (var i = payments.length - 1; i >= 0; i--) {
+  	        var payment = payments[i];
+	          switch(payment.method){
+            	case "Cash":
+          	  	cash = (+cash + +payment.amount).toFixed(2);
+        	    	break;
+      	      case "Card":
+    	        	card = (+card + +payment.amount).toFixed(2);
+  	          	break;
+	            case "Voucher":
+            		voucher = (+voucher + +payment.amount).toFixed(2);
+            		break;
+          	}
+        	}
         }
         if (tip == null) {
           tip = 0;
@@ -2357,6 +2372,17 @@ function showSnackbar(text){
   x.className = "show";
 
   setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+}
+
+function playSound(from){
+	var path = "../sounds/beep_beep_car_alarm.mp3"
+	if (from != "pages") {
+		path = "sounds/beep_beep_car_alarm.mp3"
+	}
+	var audio = new Audio(path);
+	audio.play().catch(function(error){
+		console.log(error);
+	});
 }
 
 /*=====================================
