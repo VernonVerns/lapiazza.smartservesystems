@@ -794,12 +794,9 @@ function prepareKitchenOrders(parent){
     }
     var orderItems = [];
     var dates = [];
-    querySnapshot.docChanges().forEach((change) =>{
-    	if (change.type == "added") {
-    		playSound("pages");
-    	}
-    	var doc = change.doc.data();
-    	doc.id = change.doc.id;
+    querySnapshot.forEach((order) =>{
+    	var doc = order.data();
+    	doc.id = order.id;
       var status = doc.isTableOpen;
       var items = doc.pendingItems;
       var unReadyItems = [];
@@ -880,6 +877,7 @@ function prepareKitchenOrders(parent){
 
 function addItemsKitchen(parent, items, dates){
   var children = $(parent).children();
+  console.log(children.length);
   for (var i = children.length - 1; i >= 0; i--) {
     var child = children[i];
     var order = items[i];
