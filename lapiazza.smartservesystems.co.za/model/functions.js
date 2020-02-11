@@ -946,6 +946,7 @@ function prepareWaiterTables(){
   .onSnapshot(function(querySnapshot) {
     $('#table_row').empty();
     var previouslyReady = JSON.parse(localStorage.getItem("readyOrders"));
+    console.log(previouslyReady);
   	if (previouslyReady == null) {
   		previouslyReady = [];
  		}
@@ -1540,14 +1541,17 @@ function loadPos(){
         }
         var isPaid = false;
         ballance = (+ballance - +amount).toFixed(2);
+        if (ballance < 0) {
+        	ballance = 0;
+        }
         var change = (0).toFixed(2);
         paid = (+paid + +amount).toFixed(2);
-        $('#phd_change').text(change);
-        $('#phd_ballance').val(ballance);
         db.collection("Orders").doc(orderId)
         .update({payments: payments, paid: paid, ballance: ballance, isPaid: isPaid})
         .then(function(){
           hideLoader();
+        	$('#phd_change').text(change);
+        	$('#phd_ballance').val(ballance);
         });
       }else{
         var newPayment = {method: method, amount: ballance};
