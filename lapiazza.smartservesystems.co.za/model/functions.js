@@ -2108,8 +2108,8 @@ function waiterSales(){
 
 function loadVoids (start, end){
   var date = new Date(), y = date.getFullYear(), m = date.getMonth();
-  var startDate = new Date(y, m, start);
-  var endDate = new Date(y, m, end);
+  var startDate = new Date(y, m, 1);
+  var endDate = new Date(y, (+m + 1), 0);
   var table = document.getElementById('voided_item_table');
   while(table.rows.length > 2) {
     table.deleteRow(1);

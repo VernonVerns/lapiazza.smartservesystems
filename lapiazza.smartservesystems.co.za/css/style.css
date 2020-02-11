@@ -1786,9 +1786,10 @@
 	text-align: center;
 	margin: 10px 0 0 0;
 	padding: .5em;
-	color: #fff;
+	color: #000;
 	font-weight: bold;
-	background-color: #336699;
+	border: 2px solid #336699;
+	background-color: #fff;
 }
 
 #table_orders .modal {
@@ -1852,10 +1853,9 @@
 
 
 .active-status {
-	background-color: #fff !important;
+	background-color: transparent !important;
 	font-weight: normal !important;
-	color: #000 !important;
-	border-top: 1px solid #336699;
+	border: none !important;
 }
 
 /*new kitchen design*/
