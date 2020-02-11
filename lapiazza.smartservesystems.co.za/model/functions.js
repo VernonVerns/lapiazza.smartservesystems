@@ -906,6 +906,8 @@ function addItemsKitchen(parent, items, dates){
 =======================================*/
 function activateWaiters(){
 	$('#odering_tables').hide();
+	$('#activate_sound_btn').focus();
+
 	$('#activate_sound_btn').on('click', function(){
 		$('#activate_sound_div').hide();
 		$('#odering_tables').show();
