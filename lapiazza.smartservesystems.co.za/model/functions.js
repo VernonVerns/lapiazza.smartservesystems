@@ -944,7 +944,11 @@ function prepareWaiterTables(){
   d.setHours(0,0,0,0);
   db.collection("Orders").where("tableOpenedAt", ">", d).where("isTableOpen", "==", true).orderBy("tableOpenedAt", "asc")
   .onSnapshot(function(querySnapshot) {
-      $('#table_row').empty();
+    $('#table_row').empty();
+    var previouslyReady = JSON.parse(localStorage.getItem("readyOrders"));
+  	if (previouslyReady == null) {
+  		previouslyReady = [];
+ 		}
     if (querySnapshot.size == 0) {
       $('#table_row').append('<h2 class="w3-center">No pending Requests.</h2>');
     }
@@ -974,11 +978,21 @@ function prepareWaiterTables(){
             break;
         }
       }
+      var wasReady = previouslyReady.includes(orderId);
       var style = "";
       if (ready > 0) {
         style = 'style="background-color: #28a745"';
-        playSound("pages");
+        if (!wasReady) {
+        	playSound("pages");
+        	previouslyReady.push(orderId);
+        }
+      }else{
+      	if (wasReady) {
+      		var index = previouslyReady.indexOf(orderId);
+      		previouslyReady.splice(index, 1);
+      	}
       }
+      localStorage.setItem("readyOrders", JSON.stringify(previouslyReady));
       var html = '<div class="col-sm-3">\
                       <div class="table" '+style+'>\
                         <div class="name-and-table"><span>'+waiterName+'</span><span class="w3-right">T'+table+'</span></div>\
