@@ -119,7 +119,7 @@ window.onload = function(){
         loadOrderHistory();
       break;
     case "kitchenWaiters.html":
-        activateWaiters();
+        loadWaiters();
       break;
     case "kitchen.html":
         loadKitchen();
@@ -799,6 +799,7 @@ function prepareKitchenOrders(parent){
     		playSound("pages");
     	}
     	var doc = change.doc.data();
+    	doc.id = change.doc.id;
       var status = doc.isTableOpen;
       var items = doc.pendingItems;
       var unReadyItems = [];
@@ -904,17 +905,6 @@ function addItemsKitchen(parent, items, dates){
 /*======================================
               Waiters page
 =======================================*/
-function activateWaiters(){
-	$('#odering_tables').hide();
-	$('#activate_sound_btn').focus();
-
-	$('#activate_sound_btn').on('click', function(){
-		$('#activate_sound_div').hide();
-		$('#odering_tables').show();
-		loadWaiters();
-	});
-}
-
 function loadWaiters(){
   var parent = $('#waiter_order_items');
   localStorage.setItem("isNewOrder", true);
