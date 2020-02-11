@@ -794,12 +794,9 @@ function prepareKitchenOrders(parent){
     }
     var orderItems = [];
     var dates = [];
-    querySnapshot.docChanges().forEach((change) =>{
-    	if (change.type == "added") {
-    		playSound("pages");
-    	}
-    	var doc = change.doc.data();
-    	doc.id = change.doc.id;
+    querySnapshot.forEach((order) =>{
+    	var doc = order.data();
+    	doc.id = order.id;
       var status = doc.isTableOpen;
       var items = doc.pendingItems;
       var unReadyItems = [];
@@ -880,6 +877,7 @@ function prepareKitchenOrders(parent){
 
 function addItemsKitchen(parent, items, dates){
   var children = $(parent).children();
+  console.log(children.length);
   for (var i = children.length - 1; i >= 0; i--) {
     var child = children[i];
     var order = items[i];
@@ -946,7 +944,11 @@ function prepareWaiterTables(){
   d.setHours(0,0,0,0);
   db.collection("Orders").where("tableOpenedAt", ">", d).where("isTableOpen", "==", true).orderBy("tableOpenedAt", "asc")
   .onSnapshot(function(querySnapshot) {
-      $('#table_row').empty();
+    $('#table_row').empty();
+    var previouslyReady = JSON.parse(localStorage.getItem("readyOrders"));
+  	if (previouslyReady == null) {
+  		previouslyReady = [];
+ 		}
     if (querySnapshot.size == 0) {
       $('#table_row').append('<h2 class="w3-center">No pending Requests.</h2>');
     }
@@ -976,11 +978,21 @@ function prepareWaiterTables(){
             break;
         }
       }
+      var wasReady = previouslyReady.includes(orderId);
       var style = "";
       if (ready > 0) {
         style = 'style="background-color: #28a745"';
-        playSound("pages");
+        if (!wasReady) {
+        	playSound("pages");
+        	previouslyReady.push(orderId);
+        }
+      }else{
+      	if (wasReady) {
+      		var index = previouslyReady.indexOf(orderId);
+      		previouslyReady.splice(index, 1);
+      	}
       }
+      localStorage.setItem("readyOrders", JSON.stringify(previouslyReady));
       var html = '<div class="col-sm-3">\
                       <div class="table" '+style+'>\
                         <div class="name-and-table"><span>'+waiterName+'</span><span class="w3-right">T'+table+'</span></div>\
@@ -1242,7 +1254,7 @@ function loadOrderDetails(){
     }
   });
 
-  $('.pending-item').on('click', '#voiding_item', function(e){
+  $('.pending-items-side').on('click', '#voiding_item', function(e){
     var name = $(this).find('#name')[0].innerHTML;
     var qty = $(this).find('#qty')[0].innerHTML;
     var orderId = $(this).find('#order_id')[0].innerHTML;
@@ -1518,7 +1530,7 @@ function loadPos(){
       alert("Please enter amount to make a payment.");
     }else{
       showLoader();
-      if (amount < ballance) {
+      if (parseFloat(amount) < parseFloat(ballance)) {
         var newPayment = {method: method, amount: amount};
         if (payments == null) {
           payments = [];
@@ -1530,12 +1542,12 @@ function loadPos(){
         ballance = (+ballance - +amount).toFixed(2);
         var change = (0).toFixed(2);
         paid = (+paid + +amount).toFixed(2);
-        $('#phd_change').text(change);
-        $('#phd_ballance').val(ballance);
         db.collection("Orders").doc(orderId)
         .update({payments: payments, paid: paid, ballance: ballance, isPaid: isPaid})
         .then(function(){
           hideLoader();
+        	$('#phd_change').text(change);
+        	$('#phd_ballance').val(ballance);
         });
       }else{
         var newPayment = {method: method, amount: ballance};
@@ -1954,9 +1966,9 @@ function AdminReports(){
   var n = ad.getMonth();
   var today = ad.getDate();
   dailySales(today, today+1);
-  loadVoids(today, today+1);
   monthlySales(n);
   waiterSales();
+  loadVoids();
 }
 
 function supervisorReports(){
@@ -2106,7 +2118,7 @@ function waiterSales(){
   });
 }
 
-function loadVoids (start, end){
+function loadVoids(){
   var date = new Date(), y = date.getFullYear(), m = date.getMonth();
   var startDate = new Date(y, m, 1);
   var endDate = new Date(y, (+m + 1), 0);
@@ -2115,7 +2127,7 @@ function loadVoids (start, end){
     table.deleteRow(1);
   }
   db.collection("LaPiazzaVoids").where("time", ">", startDate).where("time", "<", endDate)
-  .orderBy("time", "asc").onSnapshot(function(querySnapshot) {
+  .orderBy("time", "desc").onSnapshot(function(querySnapshot) {
     querySnapshot.forEach((doc) =>{
       var name = doc.get("itemName");
       var qty = doc.get("quantity");
