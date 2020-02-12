@@ -27,7 +27,6 @@
                 </div>
                 <div class="collapse navbar-collapse" id="myNavbar">
                     <ul class="nav navbar-nav navbar-right">
-                        <li><a style="cursor: pointer;" href="#cashUpModal" class="cash-up" onclick="doCashUP();">Cash Up</a></li>
                         <li><a href="sales.html">Sales Reports</a></li> 
                         <li><a href="../home.html">New Order</a></li> 
                     </ul>
@@ -42,85 +41,6 @@
                 <!-- Loading Tables here -->
             </div>
         </section>
-
-        <div class="popup scroll" id="cashUpModal">
-            <div class="popup-inner">
-                <div class="toal-hardcash">
-                    <h4>Total Cash <span class="w3-right totalCash" >R0.00</span></h4>
-                    <div class="row cash-money" style="position: relative;">
-                        <div class="col-sm-1 form-group w3-center quantity">
-                            <span>R200</span>
-                            <input type="number" min="0" step="1" value="0">
-                        </div>
-                        <div class="col-sm-1 form-group quantity">
-                            <span>R100</span>
-                            <input type="number" min="0" step="1" value="0">
-                        </div>
-                        <div class="col-sm-1 form-group quantity">
-                            <span>R50</span>
-                            <input type="number" min="0" step="1" value="0">
-                        </div>
-                        <div class="col-sm-1 form-group quantity">
-                            <span>R20</span>
-                            <input type="number" min="0" step="1" value="0">
-                        </div>
-                        <div class="col-sm-1 form-group quantity">
-                            <span>R10</span>
-                            <input type="number" min="0" step="1" value="0">
-                        </div>
-                        <div class="col-sm-1 form-group quantity">
-                            <span>R5</span>
-                            <input type="number" min="0" step="1" value="0">
-                        </div>
-                        <div class="col-sm-1 form-group quantity">
-                            <span>R2</span>
-                            <input type="number" min="0" step="1" value="0">
-                        </div>
-                        <div class="col-sm-1 form-group quantity">
-                            <span>R1</span>
-                            <input type="number" min="0" step="1" value="0">
-                        </div>
-                        <div class="col-sm-1 form-group quantity">
-                            <span>50c</span>
-                            <input type="number" min="0" step="1" value="0">
-                        </div>
-                        <div class="col-sm-1 form-group quantity">
-                            <span>20c</span>
-                            <input type="number" min="0" step="1" value="0">
-                        </div>
-                        <div class="col-sm-1 form-group quantity">
-                            <span>10c</span>
-                            <input type="number" min="0" step="1" value="0">
-                        </div>
-                        <div class="col-sm-1 form-group quantity">
-                            <span>5c</span>
-                            <input type="number" min="0" step="1" value="0">
-                        </div>
-                    </div>
-                </div>
-                <hr>
-                <div class="total-receipts">
-                    <h4>Total Reciepts <span class="w3-right cardTotal">R0.00</span></h4>
-                    <div id="editable_sub_categories" class="subcategories">
-                        <div class="row">
-                            <div class="input-group add-receipts col-sm-push-4">
-                                <input type="number" class="form-control cardInput" placeholder="Reciept Amount">
-                                <span class="input-group-addon addCardAmount" ><i class="fa fa-plus"></i></span>
-                            </div>
-                        </div>
-
-                        <div class="added-receipts">
-                            <!-- Reciepts are is loaded here -->
-                        </div>
-                    </div>
-                </div>
-                <hr>
-                <div class="w3-center">
-                    <button class="clockout-btn" type="button">Done</button>
-                </div>
-                <a class="popup-close" href="">X</a>
-            </div>
-        </div>
     </section>
     <section>
         <div class="cashUpPrint" style="width: 330px; padding: 0.3em;">
@@ -160,39 +80,5 @@
     <script src='https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.5/js/swiper.min.js'></script>
     <script type="text/javascript" src="../js/main.js"></script>
     <script type="text/javascript" src="../model/functions.js"></script>
-    <script type="text/javascript">
-        jQuery('<div class="quantity-nav"><div class="quantity-button quantity-up">+</div><div class="quantity-button quantity-down">-</div></div>').insertAfter('.quantity input');
-        jQuery('.quantity').each(function() {
-            var spinner = jQuery(this),
-            input = spinner.find('input[type="number"]'),
-            btnUp = spinner.find('.quantity-up'),
-            btnDown = spinner.find('.quantity-down'),
-            min = input.attr('min'),
-            max = input.attr('max');
-
-            btnUp.click(function() {
-                var oldValue = parseFloat(input.val());
-                if (oldValue >= max) {
-                    var newVal = oldValue;
-                } else {
-                    var newVal = oldValue + 1;
-                }
-                spinner.find("input").val(newVal);
-                spinner.find("input").trigger("change");
-            });
-
-            btnDown.click(function() {
-                var oldValue = parseFloat(input.val());
-                if (oldValue <= min) {
-                    var newVal = oldValue;
-                } else {
-                    var newVal = oldValue - 1;
-                }
-                spinner.find("input").val(newVal);
-                spinner.find("input").trigger("change");
-            });
-
-        });
-    </script>
 </body>
 </html>

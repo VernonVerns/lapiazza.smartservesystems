@@ -1585,6 +1585,203 @@
 	margin-top: 20px !important;
 }
 
+/*=====================================================================*/
+
+#sales .modal-content h4 {
+	font-family: "Roboto", sans-serif;
+	text-transform: uppercase;
+	margin-bottom: 10px;
+	letter-spacing: 2px;
+}
+
+#sales .modal-content h4 span {
+	margin-right: 20px;
+	font-size: 2.5rem;
+}
+
+#sales .modal-content .clockout-btn {
+	padding: 0.5em 2em;
+	background-color: #336699;
+	border: none;
+	color: #fff;
+}
+
+#sales .modal-content .toal-hardcash .cash-money span {
+	font-size: 18px;
+	font-family: "Fjalla One", sans-serif;
+}
+
+#sales .modal-content .toal-hardcash .cash-money input {
+	width: 100%;
+}
+
+#sales .modal-content .toal-hardcash .cash-money input[type=number]::-webkit-inner-spin-button,
+#sales .modal-content .toal-hardcash .cash-money input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#sales .modal-content .toal-hardcash .cash-money input[type=number] {
+  -moz-appearance: textfield;
+}
+
+#sales .modal-content .toal-hardcash .cash-money input {
+  width: 45px;
+  height: 40px;
+  line-height: 1.65;
+  float: left;
+  display: block;
+  padding: 0;
+  margin: 0;
+  padding-left: 5px;
+  border: 1px solid #eee;
+}
+
+#sales .modal-content .toal-hardcash .cash-money input:focus {
+  outline: 0;
+}
+
+#sales .modal-content .toal-hardcash .cash-money .quantity-nav {
+  float: left;
+  position: relative;
+  height: 40px;
+}
+
+#sales .modal-content .toal-hardcash .cash-money .quantity-button {
+  position: relative;
+  cursor: pointer;
+  border-left: 1px solid #eee;
+  width: 20px;
+  text-align: center;
+  color: #333;
+  font-size: 13px;
+  font-family: "Trebuchet MS", Helvetica, sans-serif !important;
+  line-height: 1.7;
+  -webkit-transform: translateX(-100%);
+  transform: translateX(-100%);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+#sales .modal-content .toal-hardcash .cash-money .quantity-button.quantity-up {
+  position: absolute;
+  height: 50%;
+  top: 0;
+  border-bottom: 1px solid #eee;
+}
+
+#sales .modal-content .toal-hardcash .cash-money .quantity-button.quantity-down {
+  position: absolute;
+  bottom: -1px;
+  height: 50%;
+}
+
+#sales .modal-content .total-receipts {
+	margin-top: 30px;
+}
+
+#sales .modal-content .total-receipts .subcategories .added-receipts {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: 20% 20% 20% 20% 20%;
+    column-gap: 10px;
+    max-height: 200px;
+    position: relative;
+    overflow-x: auto;
+} 
+
+#sales .modal-content .total-receipts .subcategories .input-group {
+    width: 100px;
+    margin-bottom: 10px;
+}
+
+#sales .modal-content .total-receipts .subcategories .add-receipts {
+	width: 200px;
+}
+
+#sales .modal-content .total-receipts .subcategories .add-receipts input {
+	width: 200px;
+	border: 1px solid #336699;
+    border-radius: 0;
+    background-color: #fff;
+    height: 40px;
+    color: #222;
+}
+
+#sales .modal-content .total-receipts .subcategories .added-receipts .input-group input {
+    border: 1px solid #336699;
+    border-radius: 0;
+    background-color: #336699;
+    height: 40px;
+    width: 90px;
+    color: #fff;
+}
+
+#sales .modal-content .total-receipts .subcategories .input-group input::placeholder {
+    color: #222;    
+}
+
+#sales .modal-content .total-receipts .subcategories .input-group span {
+    padding: 0.2em;
+    height: 10px !important;
+    margin: 0;
+    width: 40px;
+    background-color: #336699;
+    border: none;
+    color: #fff;
+    border-radius: 0;
+    cursor: pointer;
+}
+
+#sales .modal-content .total-receipts .subcategories input[type=number]::-webkit-inner-spin-button,
+#sales .modal-content .total-receipts .subcategories input[type=number]::-webkit-outer-spin-button {
+  display: none;
+}
+
+
+#sales #cashUpModal.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 9999; /* Sit on top */
+    padding-top: 30px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+#sales #cashUpModal .modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border-radius: 0 !important;
+    border: 1px solid #888;
+    width: 60%;
+}
+
+/* The Close Button */
+#sales #cashUpModal .modal-content .close {
+    color: red;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+#sales #cashUpModal .modal-content .close:hover,
+#sales #cashUpModal .modal-content .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
 /*--------------------------------------------------
 					Tables
 --------------------------------------------------*/
@@ -1929,226 +2126,9 @@
 	color: #fff;
 }
 
-#kitchen_orders .popup {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	position: fixed;
-	width: 100vw;
-	height: 100vh;
-	top: 0;
-	bottom: 0;
-	right: 0;
-	background-color: rgba(0, 0, 0, 0.8);
-	z-index: 9999;
-	visibility: hidden;
-	opacity: 0;
-	overflow: hidden;
-	transition: .64s ease-in-out;
-}
-
-#kitchen_orders .popup-inner {
-	padding: 1em;
-	position: relative;
-	border-radius: 5px;
-	bottom: -100vw;
-	right: -100vh;
-	max-width: 1000px;
-	width: 60%;
-	background-color: #fff;
-	-webkit-transform: rotate(32deg);
-	transform: rotate(32deg);
-	transition: .64s ease-in-out;
-}
-
-#kitchen_orders .popup-inner h4 {
-	font-family: "Roboto", sans-serif;
-	text-transform: uppercase;
-	margin-bottom: 10px;
-	letter-spacing: 2px;
-}
-
-#kitchen_orders .popup-inner h4 span {
-	margin-right: 20px;
-	font-size: 2.5rem;
-}
-
-#kitchen_orders .popup-inner .clockout-btn {
-	padding: 0.5em 2em;
-	background-color: #336699;
-	border: none;
-	color: #fff;
-}
-
-#kitchen_orders .popup-inner .toal-hardcash .cash-money span {
-	font-size: 18px;
-	font-family: "Fjalla One", sans-serif;
-}
-
-#kitchen_orders .popup-inner .toal-hardcash .cash-money input {
-	width: 100%;
-}
-
-#kitchen_orders .popup-inner .toal-hardcash .cash-money input[type=number]::-webkit-inner-spin-button,
-#kitchen_orders .popup-inner .toal-hardcash .cash-money input[type=number]::-webkit-outer-spin-button
-{
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-#kitchen_orders .popup-inner .toal-hardcash .cash-money input[type=number]
-{
-  -moz-appearance: textfield;
-}
-
-#kitchen_orders .popup-inner .toal-hardcash .cash-money input {
-  width: 45px;
-  height: 40px;
-  line-height: 1.65;
-  float: left;
-  display: block;
-  padding: 0;
-  margin: 0;
-  padding-left: 5px;
-  border: 1px solid #eee;
-}
-
-#kitchen_orders .popup-inner .toal-hardcash .cash-money input:focus {
-  outline: 0;
-}
-
-#kitchen_orders .popup-inner .toal-hardcash .cash-money .quantity-nav {
-  float: left;
-  position: relative;
-  height: 40px;
-}
-
-#kitchen_orders .popup-inner .toal-hardcash .cash-money .quantity-button {
-  position: relative;
-  cursor: pointer;
-  border-left: 1px solid #eee;
-  width: 20px;
-  text-align: center;
-  color: #333;
-  font-size: 13px;
-  font-family: "Trebuchet MS", Helvetica, sans-serif !important;
-  line-height: 1.7;
-  -webkit-transform: translateX(-100%);
-  transform: translateX(-100%);
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -o-user-select: none;
-  user-select: none;
-}
-
-#kitchen_orders .popup-inner .toal-hardcash .cash-money .quantity-button.quantity-up {
-  position: absolute;
-  height: 50%;
-  top: 0;
-  border-bottom: 1px solid #eee;
-}
-
-#kitchen_orders .popup-inner .toal-hardcash .cash-money .quantity-button.quantity-down {
-  position: absolute;
-  bottom: -1px;
-  height: 50%;
-}
-
-#kitchen_orders .popup-inner .total-receipts {
-	margin-top: 30px;
-}
-
-#kitchen_orders .popup-inner .total-receipts .subcategories .added-receipts {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    display: grid;
-    grid-template-columns: 20% 20% 20% 20% 20%;
-    column-gap: 10px;
-    max-height: 200px;
-    position: relative;
-    overflow-x: auto;
-} 
-
-#kitchen_orders .popup-inner .total-receipts .subcategories .input-group {
-    width: 100px;
-    margin-bottom: 10px;
-}
-
-#kitchen_orders .popup-inner .total-receipts .subcategories .add-receipts {
-	width: 200px;
-}
-
-#kitchen_orders .popup-inner .total-receipts .subcategories .input-group input {
-    border: 1px solid #336699;
-    border-radius: 0;
-    background-color: #fff;
-    height: 40px;
-    color: #222;
-
-}
-
-#kitchen_orders .popup-inner .total-receipts .subcategories .input-group input::placeholder {
-    color: #222;    
-}
-
-#kitchen_orders .popup-inner .total-receipts .subcategories .input-group span {
-    padding: 0.2em;
-    height: 10px !important;
-    margin: 0;
-    width: 40px;
-    background-color: #336699;
-    border: none;
-    color: #fff;
-    border-radius: 0;
-    cursor: pointer;
-}
-
-#kitchen_orders .popup-inner .total-receipts .subcategories input[type=number]::-webkit-inner-spin-button,
-#kitchen_orders .popup-inner .total-receipts .subcategories input[type=number]::-webkit-outer-spin-button
-{
-  display: none;
-}
-
-#kitchen_orders .popup:target {
-	visibility: visible;
-	opacity: 1;
-}
-
-#kitchen_orders .popup:target .popup-inner {
-	bottom: 0;
-	right: 0;
-	-webkit-transform: rotate(0);
-	transform: rotate(0);
-}
-
-#kitchen_orders .popup-close {
-	position: absolute;
-	right: -1rem;
-	top: -1rem;
-	width: 3rem;
-	height: 3rem;
-	font-size: .875rem;
-	font-weight: 300;
-	border-radius: 100%;
-	background-color: #336699;
-	z-index: 4;
-	color: #fff;
-	line-height: 3rem;
-	text-align: center;
-	cursor: pointer;
-	text-decoration: none;
-	transition: 0.6s ease;
-}
-
-#kitchen_orders .popup-close:hover {
-	background-color: tomato;
-}
-
 .cashUpPrint p {
 	margin: 0;
 }
-
 /*================================
 			Loader wheel
 =================================*/
