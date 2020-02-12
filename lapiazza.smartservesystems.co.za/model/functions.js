@@ -1158,143 +1158,6 @@ function addRequestItems(items, dates){
 }
 
 /*======================================
-              Cash up
-=======================================*/
-function doCashUP(){
-	// if (currEmpl == null) {
- //    authRun = doCashUP;
- //    authModal.style.display = "block";
- //    $('#empl_number').focus();
- //    return;
- //  }
-
-  var bills = [200, 100, 50, 20, 10, 5, 2, 1, 0.50, 0.20, 0.10, 0.05];
-  var billsQty = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-
-  $('.clockout-btn').on('click', function(){
-  	cashUpReceipt();
-  	// window.location.href = "";
-  });
-
-	$('.cash-money').on('change', 'input', function(){
-		var value = $(this).val();
-		var bill = $(this).closest('.quantity').find('span').text().trim();
-		switch(bill){
-			case "50c":
-				bill = 0.50;
-				break;
-			case "20c":
-				bill = 0.20;
-				break;
-			case "10c":
-				bill = 0.10;
-				break;
-			case "5c":
-				bill = 0.05;
-				break;
-			default:
-				bill = bill.substr(1);
-		}
-		if (value < 0) {
-			$(this).val(0);
-		}else{
-			var total = 0;
-			for (var i = 0; i < bills.length; i++) {
-				var billInfo = bills[i];
-				if (bill == billInfo) {
-					billsQty[i] = value;
-				}
-				var qty = billsQty[i];
-				total = (+total + (+qty * +billInfo)).toFixed(2);
-			}			
-			$('.totalCash').text("R" + total);	
-		}
-	});
-
-	$('.cardInput').on('keyup', function(e){
-		if (e.keyCode == 13) {
-			$('.addCardAmount').click();
-		}
-	});
-
-	$('.added-receipts').on('click', '#remove_receipt', function(){
-		var amount = $(this).closest('.input-group').find('input').val();
-		var total = $('.cardTotal').text();
-		total = total.substr(1);
-		console.log(amount + " , " + total);
-		total = (+total - +amount).toFixed(2);
-		console.log(total);
-		$('.cardTotal').text("R" + total);
-		$(this).closest('.input-group').remove();
-	})
-
-	$('.addCardAmount').on('click', function(){
-		var amount = $(this).closest('.add-receipts').find('input').val();
-		var total = $('.cardTotal').text();
-		total = total.substr(1);
-		if (amount < 1) {
-			return;
-		}
-		var html = '<div class="input-group">\
-                    <input type="number" class="form-control" value="'+amount+'"/>\
-                    <span class="input-group-addon" id="remove_receipt"><i class="fa fa-times"></i></span>\
-               </div>';
-    $('.added-receipts').append(html);
-    $(this).closest('.add-receipts').find('input').val('');
-    total = (+total + +amount).toFixed(2);
-    $('.cardTotal').text("R" + total);
-	})
-}
-
-function cashUpReceipt(){
-	var inputs = $('.cash-money').find('input');
-	var cashTotal = 0;
-	for (var i = 0; i < inputs.length; i++) {
-		var input = inputs[i];
-		var qty = $(input).val();
-		var bill = $(input).closest('.quantity').find('span').text();
-		switch(bill){
-			case "50c":
-				bill = 0.50;
-				break;
-			case "20c":
-				bill = 0.20;
-				break;
-			case "10c":
-				bill = 0.10;
-				break;
-			case "5c":
-				bill = 0.05;
-				break;
-			default:
-				bill = bill.substr(1);
-		}
-		var subTotal = (+qty * +bill).toFixed(2);
-		cashTotal = (+cashTotal + +subTotal).toFixed(2);
-		var cashHtml = '<p>'+qty+' X R'+bill+' <span class="w3-right">R'+subTotal+'</span></p>';
-		$('#CashBills').append(cashHtml);
-	}
-	$('.CashTotal').text("R" + cashTotal);
-
-	var receipts = $('.added-receipts').children();
-	console.log(receipts.length);
-	var cardTotal = 0;
-	for (var i = 0; i < receipts.length; i++) {
-		var receipt = receipts[i];
-		var amount = $(receipt).find('input').val();
-		cardTotal = (+cardTotal + +amount).toFixed(2);
-		var num = i + 1;
-		var cardHtml = '<p>Receipt '+num+' <span class="w3-right">R'+amount+'</span></p>';
-		$('#CardReceipts').append(cardHtml);
-	}
-	$('.CardTotal').text("R" + cardTotal);
-	var mainTotal = (+cashTotal + +cardTotal).toFixed(2);
-	$('.FullTotal').text("R" + mainTotal);
-}
-
-
-/*======================================
               TableOrder
 =======================================*/
 function loadOrderDetails(){
@@ -1908,8 +1771,8 @@ function addItemsToPosOrder(orderedItems){
 /*======================================
               Sales Page
 =======================================*/
-
 function loadSalesPage(userSigned) {
+	var dailyTotal = 0;
   var td = new Date();
   var n = td.getMonth();
   var today = td.getDate();
@@ -1935,6 +1798,22 @@ function loadSalesPage(userSigned) {
     }
   }
 
+  $('#openCashup').on('click', function(){
+  	var modal = document.getElementById("cashUpModal");
+    modal.style.display = "block";
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+  	doCashUP(dailyTotal);
+  });
+
+  $('#close_cashup').on('click', function(){
+  	var modal = document.getElementById("cashUpModal");
+  	modal.style.display = "none";
+  });
+
   $('#month_picker').change(function(){
     var month = $(this).children("option:selected").val();
     monthlySales(month);
@@ -1955,7 +1834,7 @@ function loadSalesPage(userSigned) {
     db.collection("Orders").where("tableOpenedAt", ">", d).where("servedBy", "==", empNumber)
     .get().then((querySnapshot) =>{
       $('#n_tables_served').text(querySnapshot.size);
-      var dailyTotal = 0;
+      dailyTotal = 0;
       var cash = 0;
       var card = 0;
       var voucher = 0;
@@ -2135,6 +2014,7 @@ function loadSigleWaiter(waiter){
                         <p hidden>'+empNumber+'</p></li>';
       $('#waiters_list').append(waiterHtml);
     });
+    $('#waiters_list').find('li')[0].click();
   });
 }
 
@@ -2310,6 +2190,146 @@ function getMonthName(n){
   return monthNames[n];
 }
 
+/*======================================
+              Cash up
+=======================================*/
+function doCashUP(dailyTotal){
+	var bills = [200, 100, 50, 20, 10, 5, 2, 1, 0.50, 0.20, 0.10, 0.05];
+  var billsQty = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+
+  $('.clockout-btn').on('click', function(){
+  	cashUpReceipt(dailyTotal);
+  });
+
+	$('.cash-money').on('change', 'input', function(){
+		var value = $(this).val();
+		var bill = $(this).closest('.quantity').find('span').text().trim();
+		switch(bill){
+			case "50c":
+				bill = 0.50;
+				break;
+			case "20c":
+				bill = 0.20;
+				break;
+			case "10c":
+				bill = 0.10;
+				break;
+			case "5c":
+				bill = 0.05;
+				break;
+			default:
+				bill = bill.substr(1);
+		}
+		if (value < 0) {
+			$(this).val(0);
+		}else{
+			var total = 0;
+			for (var i = 0; i < bills.length; i++) {
+				var billInfo = bills[i];
+				if (bill == billInfo) {
+					billsQty[i] = value;
+				}
+				var qty = billsQty[i];
+				total = (+total + (+qty * +billInfo)).toFixed(2);
+			}			
+			$('.totalCash').text("R" + total);	
+		}
+	});
+
+	$('.cardInput').on('keyup', function(e){
+		if (e.keyCode == 13) {
+			$('.addCardAmount').click();
+		}
+	});
+
+	$('.added-receipts').on('click', '#remove_receipt', function(){
+		var amount = $(this).closest('.input-group').find('input').val();
+		var total = $('.cardTotal').text();
+		total = total.substr(1);
+		console.log(amount + " , " + total);
+		total = (+total - +amount).toFixed(2);
+		console.log(total);
+		$('.cardTotal').text("R" + total);
+		$(this).closest('.input-group').remove();
+	})
+
+	$('.addCardAmount').on('click', function(){
+		var amount = $(this).closest('.add-receipts').find('input').val();
+		var total = $('.cardTotal').text();
+		total = total.substr(1);
+		if (amount < 1) {
+			return;
+		}
+		var html = '<div class="input-group">\
+                    <input type="number" class="form-control" value="'+amount+'"/>\
+                    <span class="input-group-addon" id="remove_receipt"><i class="fa fa-times"></i></span>\
+               </div>';
+    $('.added-receipts').append(html);
+    $(this).closest('.add-receipts').find('input').val('');
+    total = (+total + +amount).toFixed(2);
+    $('.cardTotal').text("R" + total);
+	})
+}
+
+function cashUpReceipt(dailyTotal){
+  $('#cashUpSection').show();
+  $('.WaiterName').text(currEmplName);
+	var inputs = $('.cash-money').find('input');
+	var cashTotal = 0;
+	for (var i = 0; i < inputs.length; i++) {
+		var input = inputs[i];
+		var qty = $(input).val();
+		var bill = $(input).closest('.quantity').find('span').text();
+		switch(bill){
+			case "50c":
+				bill = 0.50;
+				break;
+			case "20c":
+				bill = 0.20;
+				break;
+			case "10c":
+				bill = 0.10;
+				break;
+			case "5c":
+				bill = 0.05;
+				break;
+			default:
+				bill = bill.substr(1);
+		}
+		var subTotal = (+qty * +bill).toFixed(2);
+		cashTotal = (+cashTotal + +subTotal).toFixed(2);
+		var cashHtml = '<p>'+qty+' X R'+bill+' <span class="w3-right">R'+subTotal+'</span></p>';
+		$('#CashBills').append(cashHtml);
+	}
+	$('.CashTotal').text("R" + cashTotal);
+
+	var receipts = $('.added-receipts').children();
+	console.log(receipts.length);
+	var cardTotal = 0;
+	for (var i = 0; i < receipts.length; i++) {
+		var receipt = receipts[i];
+		var amount = $(receipt).find('input').val();
+		cardTotal = (+cardTotal + +amount).toFixed(2);
+		var num = i + 1;
+		var cardHtml = '<p>Receipt '+num+' <span class="w3-right">R'+amount+'</span></p>';
+		$('#CardReceipts').append(cardHtml);
+	}
+	$('.CardTotal').text("R" + cardTotal);
+	var mainTotal = (+cashTotal + +cardTotal).toFixed(2);
+	var tip = (+mainTotal - +dailyTotal).toFixed(2);
+	$('.FullTotal').text("R" + mainTotal);
+	$('.CashUpTip').text("R" + tip);
+
+	var modal = document.getElementById("cashUpModal");
+	modal.style.display = "none";
+	$('#sales').hide();
+	window.print();
+	setTimeout(function(){
+		$('#sales').show();
+		$('#cashUpSection').hide();
+	}, 150);
+}
 /*======================================
               Multi Pages
 =======================================*/

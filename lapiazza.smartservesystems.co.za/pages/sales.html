@@ -190,7 +190,7 @@
             <div class="modal-content">
                 <span id="close_cashup" class="close">&times;</span>
                 <div class="toal-hardcash">
-                    <h4>Total Cash <span class="w3-right">R0.00</span></h4>
+                    <h4>Total Cash <span class="w3-right totalCash">R0.00</span></h4>
                     <div class="row cash-money" style="position: relative;">
                         <div class="col-sm-1 form-group w3-center quantity">
                             <span>R200</span>
@@ -244,70 +244,17 @@
                 </div>
                 <hr>
                 <div class="total-receipts">
-                    <h4>Total Reciepts <span class="w3-right">R2098.76</span></h4>
+                    <h4>Total Reciepts <span class="w3-right cardTotal">R0.00</span></h4>
                     <div id="editable_sub_categories" class="subcategories">
                         <div class="row">
                             <div class="input-group add-receipts col-sm-push-4">
-                                <input type="number" class="form-control" placeholder="Reciept Amount">
-                                <span class="input-group-addon" ><i class="fa fa-plus"></i></span>
+                                <input type="number" class="form-control cardInput" placeholder="Reciept Amount">
+                                <span class="input-group-addon addCardAmount" ><i class="fa fa-plus"></i></span>
                             </div>
                         </div>
 
                         <div class="added-receipts">
-                            <div class="input-group">
-                                <input type="number" class="form-control" value="278" disabled/>
-                                <span class="input-group-addon" id="remove_subcategory"><i class="fa fa-times"></i></span>
-                            </div>
-
-                            <div class="input-group">
-                                <input type="number" class="form-control" value="278" disabled/>
-                                <span class="input-group-addon" id="remove_subcategory"><i class="fa fa-times"></i></span>
-                            </div>
-
-                            <div class="input-group">
-                                <input type="number" class="form-control" value="278" disabled/>
-                                <span class="input-group-addon" id="remove_subcategory"><i class="fa fa-times"></i></span>
-                            </div>
-
-                            <div class="input-group">
-                                <input type="number" class="form-control" value="278" disabled/>
-                                <span class="input-group-addon" id="remove_subcategory"><i class="fa fa-times"></i></span>
-                            </div>
-
-                            <div class="input-group">
-                                <input type="number" class="form-control" value="278" disabled/>
-                                <span class="input-group-addon" id="remove_subcategory"><i class="fa fa-times"></i></span>
-                            </div>
-
-                            <div class="input-group">
-                                <input type="number" class="form-control" value="278" disabled/>
-                                <span class="input-group-addon" id="remove_subcategory"><i class="fa fa-times"></i></span>
-                            </div>
-
-                            <div class="input-group">
-                                <input type="number" class="form-control" value="278" disabled/>
-                                <span class="input-group-addon" id="remove_subcategory"><i class="fa fa-times"></i></span>
-                            </div>
-                            
-                            <div class="input-group">
-                                <input type="number" class="form-control" value="278" disabled/>
-                                <span class="input-group-addon" id="remove_subcategory"><i class="fa fa-times"></i></span>
-                            </div>
-
-                            <div class="input-group">
-                                <input type="number" class="form-control" value="278" disabled/>
-                                <span class="input-group-addon" id="remove_subcategory"><i class="fa fa-times"></i></span>
-                            </div>
-
-                            <div class="input-group">
-                                <input type="number" class="form-control" value="278" disabled/>
-                                <span class="input-group-addon" id="remove_subcategory"><i class="fa fa-times"></i></span>
-                            </div>
-
-                            <div class="input-group">
-                                <input type="number" class="form-control" value="278" disabled/>
-                                <span class="input-group-addon" id="remove_subcategory"><i class="fa fa-times"></i></span>
-                            </div>
+                            <!-- Card Receipts here -->
                         </div>
                     </div>
                 </div>
@@ -334,6 +281,36 @@
                     <button id="verify_employee">Verify</button>
                 </div>
             </div>
+        </div>
+    </section>
+    <section id="cashUpSection" style="display: none;">
+        <div class="cashUpPrint">
+            <h2 class="w3-center WaiterName">Developer</h2>
+            <div>
+                -----------------------------------------------------------------<br>
+                <h5 class="w3-center">Cash Details</h5>
+                -----------------------------------------------------------------<br>
+            </div>
+            <div id="CashBills">
+                <!-- Cash Bills -->
+            </div>
+            <h4>Total Cash <span class="w3-right CashTotal"></span></h4>
+            <div>
+                -----------------------------------------------------------------<br>
+                <h5 class="w3-center">Card Details</h5>
+                -----------------------------------------------------------------<br>
+            </div>
+            <div id="CardReceipts">
+            	<!-- Card Receipts -->
+            </div>
+            <h4>Total Card <span class="w3-right CardTotal"></span></h4>
+            <div>
+                -----------------------------------------------------------------<br>
+                <h5 class="w3-center">Over All</h5>
+                -----------------------------------------------------------------<br>
+            </div>
+            <h4>Total <span class="w3-right FullTotal"></span></h4>
+            <h4>Tip <span class="w3-right CashUpTip">R200</span></h4>
         </div>
     </section>
 
@@ -439,18 +416,6 @@
                 spinner.find("input").val(newVal);
                 spinner.find("input").trigger("change");
             });
-
-        });
-
-        $('#openCashup').on('click', function() {
-            var modal = document.getElementById("cashUpModal");
-            modal.style.display = "block";
-
-            window.onclick = function(event) {
-                if (event.target == modal) {
-                    modal.style.display = "none";
-                }
-            }
         });
 	</script>
 </body>
