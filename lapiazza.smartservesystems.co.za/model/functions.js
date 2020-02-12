@@ -113,7 +113,9 @@ window.onload = function(){
         loadHome();
       break;
     case "cart.html":
-        loadCart();
+    		authRun = loadCart;
+    		authModal.style.display = "block";
+  			$('#empl_number').focus();
       break;
     case "orderHistory.html":
         loadOrderHistory();
@@ -356,8 +358,6 @@ function addToCart(arr, obj, qty) {
 =======================================*/
 
 function loadCart(){
-  authModal.style.display = "block";
-  $('#empl_number').focus();
   var tableHtml = '<option value="Takeaway">Takeaway</option>';
   $('#table_number').append(tableHtml);
   for (var i = 1; i < 31; i++) {
@@ -534,7 +534,6 @@ function prepareCart(){
   $('#cart_container').empty();
   total = 0;
   totalQty = 0;
-  console.log(itemsInCart.length);
   if (itemsInCart.length === 0) {
     $('#cart_container').append('<h3>Please add some items in your cart to place an order</h3>');
   }else{
@@ -929,14 +928,6 @@ function loadWaiters(){
     sessionStorage.setItem("selectedTableId", id);
     window.location.href = "posHome.html";
   });
-  // Open the verification modal
-  // $('#kitchen_requests').on('click', function(){
-  //   isOrder = false;
-  //   attendantCliked = $(this).find('#req_id')[0].innerHTML.trim();
-  //   authRun = respondRequest; 
-  //   authModal.style.display = "block";
-  //   $('#empl_number').focus();
-  // });
 }
 function prepareWaiterTables(){
   $('#table_row').empty();
@@ -1165,6 +1156,143 @@ function addRequestItems(items, dates){
     clockCount(clockElem, hours, min, sec);
   }
 }
+
+/*======================================
+              Cash up
+=======================================*/
+function doCashUP(){
+	// if (currEmpl == null) {
+ //    authRun = doCashUP;
+ //    authModal.style.display = "block";
+ //    $('#empl_number').focus();
+ //    return;
+ //  }
+
+  var bills = [200, 100, 50, 20, 10, 5, 2, 1, 0.50, 0.20, 0.10, 0.05];
+  var billsQty = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+
+  $('.clockout-btn').on('click', function(){
+  	cashUpReceipt();
+  	// window.location.href = "";
+  });
+
+	$('.cash-money').on('change', 'input', function(){
+		var value = $(this).val();
+		var bill = $(this).closest('.quantity').find('span').text().trim();
+		switch(bill){
+			case "50c":
+				bill = 0.50;
+				break;
+			case "20c":
+				bill = 0.20;
+				break;
+			case "10c":
+				bill = 0.10;
+				break;
+			case "5c":
+				bill = 0.05;
+				break;
+			default:
+				bill = bill.substr(1);
+		}
+		if (value < 0) {
+			$(this).val(0);
+		}else{
+			var total = 0;
+			for (var i = 0; i < bills.length; i++) {
+				var billInfo = bills[i];
+				if (bill == billInfo) {
+					billsQty[i] = value;
+				}
+				var qty = billsQty[i];
+				total = (+total + (+qty * +billInfo)).toFixed(2);
+			}			
+			$('.totalCash').text("R" + total);	
+		}
+	});
+
+	$('.cardInput').on('keyup', function(e){
+		if (e.keyCode == 13) {
+			$('.addCardAmount').click();
+		}
+	});
+
+	$('.added-receipts').on('click', '#remove_receipt', function(){
+		var amount = $(this).closest('.input-group').find('input').val();
+		var total = $('.cardTotal').text();
+		total = total.substr(1);
+		console.log(amount + " , " + total);
+		total = (+total - +amount).toFixed(2);
+		console.log(total);
+		$('.cardTotal').text("R" + total);
+		$(this).closest('.input-group').remove();
+	})
+
+	$('.addCardAmount').on('click', function(){
+		var amount = $(this).closest('.add-receipts').find('input').val();
+		var total = $('.cardTotal').text();
+		total = total.substr(1);
+		if (amount < 1) {
+			return;
+		}
+		var html = '<div class="input-group">\
+                    <input type="number" class="form-control" value="'+amount+'"/>\
+                    <span class="input-group-addon" id="remove_receipt"><i class="fa fa-times"></i></span>\
+               </div>';
+    $('.added-receipts').append(html);
+    $(this).closest('.add-receipts').find('input').val('');
+    total = (+total + +amount).toFixed(2);
+    $('.cardTotal').text("R" + total);
+	})
+}
+
+function cashUpReceipt(){
+	var inputs = $('.cash-money').find('input');
+	var cashTotal = 0;
+	for (var i = 0; i < inputs.length; i++) {
+		var input = inputs[i];
+		var qty = $(input).val();
+		var bill = $(input).closest('.quantity').find('span').text();
+		switch(bill){
+			case "50c":
+				bill = 0.50;
+				break;
+			case "20c":
+				bill = 0.20;
+				break;
+			case "10c":
+				bill = 0.10;
+				break;
+			case "5c":
+				bill = 0.05;
+				break;
+			default:
+				bill = bill.substr(1);
+		}
+		var subTotal = (+qty * +bill).toFixed(2);
+		cashTotal = (+cashTotal + +subTotal).toFixed(2);
+		var cashHtml = '<p>'+qty+' X R'+bill+' <span class="w3-right">R'+subTotal+'</span></p>';
+		$('#CashBills').append(cashHtml);
+	}
+	$('.CashTotal').text("R" + cashTotal);
+
+	var receipts = $('.added-receipts').children();
+	console.log(receipts.length);
+	var cardTotal = 0;
+	for (var i = 0; i < receipts.length; i++) {
+		var receipt = receipts[i];
+		var amount = $(receipt).find('input').val();
+		cardTotal = (+cardTotal + +amount).toFixed(2);
+		var num = i + 1;
+		var cardHtml = '<p>Receipt '+num+' <span class="w3-right">R'+amount+'</span></p>';
+		$('#CardReceipts').append(cardHtml);
+	}
+	$('.CardTotal').text("R" + cardTotal);
+	var mainTotal = (+cashTotal + +cardTotal).toFixed(2);
+	$('.FullTotal').text("R" + mainTotal);
+}
+
 
 /*======================================
               TableOrder
@@ -1925,15 +2053,15 @@ function loadSalesPage(userSigned) {
                       </tr>'
         $('#waiter_sales_table tr:last').before(saleRow);
       }
-      if (cash > 0) {
+      if (cash > 0 && userSigned == "Admin") {
       	var html = addPaymentMethod("Cash", cash);
       	$('#waiter_sales_table tr:last').before(html);
       }
-      if (card > 0) {
+      if (card > 0 && userSigned == "Admin") {
       	var html = addPaymentMethod("Card", card);
       	$('#waiter_sales_table tr:last').before(html);
       }
-      if (voucher > 0) {
+      if (voucher > 0 && userSigned == "Admin") {
       	var html = addPaymentMethod("Voucher", voucher);
       	$('#waiter_sales_table tr:last').before(html);
       }
@@ -1946,6 +2074,9 @@ function loadSalesPage(userSigned) {
     $(this).addClass("active-tab");
     $('#totalSales').hide();
     $('#daily').hide();
+    if (userSigned != "Admin") {
+    	$('#main_total').hide();
+  	}
   });
 
   $('#save_pdf').on('click', function(){
@@ -1995,6 +2126,7 @@ function loadSigleWaiter(waiter){
   $('#tsales').remove();
   $('#daily').remove();
   $('#totalSales').remove();
+  $('#voids').remove();
   db.collection("Employees").where("name", "==", waiter).get().then((querySnapshot) =>{
     querySnapshot.forEach((doc) =>{
       var name = doc.get("name");
@@ -2293,6 +2425,8 @@ $('#verify_employee').on('click', function(){
           authRun(name);
         }
         break;
+       default:
+       	authRun();
     }
     authModal.style.display = "none";
   }

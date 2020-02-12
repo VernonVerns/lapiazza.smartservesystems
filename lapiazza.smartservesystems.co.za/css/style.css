@@ -2145,6 +2145,10 @@
 	background-color: tomato;
 }
 
+.cashUpPrint p {
+	margin: 0;
+}
+
 /*================================
 			Loader wheel
 =================================*/
