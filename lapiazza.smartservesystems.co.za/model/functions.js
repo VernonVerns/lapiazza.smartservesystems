@@ -2299,7 +2299,7 @@ function cashUpReceipt(dailyTotal){
 		}
 		var subTotal = (+qty * +bill).toFixed(2);
 		cashTotal = (+cashTotal + +subTotal).toFixed(2);
-		var cashHtml = '<p>'+qty+' X R'+bill+' <span class="w3-right">R'+subTotal+'</span></p>';
+		var cashHtml = '<p> R'+bill+' X '+qty+'<span class="w3-right">R'+subTotal+'</span></p>';
 		$('#CashBills').append(cashHtml);
 	}
 	$('.CashTotal').text("R" + cashTotal);
