@@ -2133,7 +2133,11 @@
 	}
 
 	.cashUpPrint p {
-		margin: 0;
+		margin: 0 20px 0 5px;
+	}
+
+	.cashUpPrint h2, h4, h5 {
+		margin-right: 20px;
 	}
 }
 /*================================
