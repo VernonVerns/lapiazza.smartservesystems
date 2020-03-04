@@ -32,6 +32,8 @@ var currEmpl;
 var currEmplName = "Unattended";
 var parent;
 var table = null;
+var InventoryRef = db.collection("LaPiazzaInventory");
+var EmployeesRef = db.collection("Employees");
 var total = $('#total_home').text().trim();
 var totalQty = $('#total_qty_home').text().trim();
 var totalQtyHtml = document.getElementById('total_qty_home');
@@ -72,79 +74,81 @@ $(document).ready(function(){
 });
 
 window.onload = function(){
-  if (localStorage.getItem("isNewOrder") != null) {
-    isNewOrder = localStorage.getItem("isNewOrder");
-  }
+	if (localStorage.getItem("isNewOrder") != null) {
+		isNewOrder = localStorage.getItem("isNewOrder");
+	}
 
-  if (localStorage.getItem("orderHistory") != "null" && localStorage.getItem("orderHistory") != null) {
-    orderHistory = JSON.parse(localStorage.getItem("orderHistory"));
-  }else{
-    console.log("Order History Not Saved");
-  }
+	if (localStorage.getItem("orderHistory") != "null" && localStorage.getItem("orderHistory") != null) {
+		orderHistory = JSON.parse(localStorage.getItem("orderHistory"));
+	}
 
-  if (sessionStorage.getItem("currentOrder") != "null" && sessionStorage.getItem("currentOrder") != null) {
-    currentOrder = sessionStorage.getItem("currentOrder");
-  }else{
-    console.log("Current Order Not Saved");
-  }
+	if (sessionStorage.getItem("currentOrder") != "null" && sessionStorage.getItem("currentOrder") != null) {
+		currentOrder = sessionStorage.getItem("currentOrder");
+	}else{
+		console.log("Current Order Not Saved");
+	}
 
- db.collection("Employees").onSnapshot(function(querySnapshot) {
-    querySnapshot.forEach((doc) => {
-      var empNo = doc.get("empNumber");
-      var position = doc.get("position");
-      var name = doc.get("name");
-      var employee = {emplNo: empNo, position: position, name: name};
-      switch(position){
-        case "Admin":
-          adminsList.push(employee);
-          break;
-        case "Supervisor":
-          supervisorList.push(employee);
-          break;
-      }
-      staffList.push(employee);
-    });
-  });
+ 	EmployeesRef.onSnapshot(function(querySnapshot) {
+		querySnapshot.forEach((doc) => {
+			var empNo = doc.get("empNumber");
+			var position = doc.get("position");
+			var name = doc.get("name");
+			var employee = {emplNo: empNo, position: position, name: name};
+			switch(position){
+			case "Admin":
+			  adminsList.push(employee);
+			  break;
+			case "Supervisor":
+			  supervisorList.push(employee);
+			  break;
+			}
+			staffList.push(employee);
+		});
+		for (var i = staffList.length - 1; i >= 0; i--) {
+			var member = staffList[i].name;
+			$('#select_waiter').append(new Option(member));
+		}
+	});
 
-  var url = window.location.href.split("/");
-  page = url[url.length - 1].trim();
-  switch(page){
-    case "home.html":
-        loadHome();
-      break;
-    case "cart.html":
-    		authRun = loadCart;
-    		authModal.style.display = "block";
-  			$('#empl_number').focus();
-      break;
-    case "orderHistory.html":
-        loadOrderHistory();
-      break;
-    case "kitchenWaiters.html":
-        loadWaiters();
-      break;
-    case "kitchen.html":
-        loadKitchen();
-      break;
-    case "posHome.html":
-        loadPos();
-      break;
-    case "sales.html":
-        isAdminCheck = true;
-        authRun = loadSalesPage;
-        authModal.style.display = "block";
-        $('#empl_number').focus();
-      break;
-    case "index.html":
-        loadWaiters();
-      break;
-    case "tableOrder.html":
-        loadOrderDetails();
-      break;
-    default:
-        window.location.href = "pages/kitchenWaiters.html";
-      break;
-  }
+	var url = window.location.href.split("/");
+	page = url[url.length - 1].trim();
+	switch(page){
+	case "home.html":
+	    loadHome();
+	  break;
+	case "cart.html":
+		authRun = loadCart;
+		authModal.style.display = "block";
+		$('#empl_number').focus();
+	  break;
+	case "orderHistory.html":
+	    loadOrderHistory();
+	  break;
+	case "kitchenWaiters.html":
+	    loadWaiters();
+	  break;
+	case "kitchen.html":
+	    loadKitchen();
+	  break;
+	case "posHome.html":
+	    loadPos();
+	  break;
+	case "sales.html":
+	    isAdminCheck = true;
+	    authRun = loadSalesPage;
+	    authModal.style.display = "block";
+	    $('#empl_number').focus();
+	  break;
+	case "index.html":
+	    loadWaiters();
+	  break;
+	case "tableOrder.html":
+	    loadOrderDetails();
+	  break;
+	default:
+	    window.location.href = "pages/kitchenWaiters.html";
+	  break;
+	}
 }
 
 /*======================================
@@ -770,18 +774,42 @@ function loadKitchen(){
     var index = $(this).val();
     var newStatus = $(this).text().trim();
     var id = $(this).closest('.kitchen-progress-btn').find('p').text().trim();
+    var qty = $(this).closest('.order').find('.name-and-price').text().trim();
+    qty = qty.split('x');
+    qty = qty[0];
     db.collection("Orders").doc(id).get().then((doc) =>{
       var pendingItems = doc.get("pendingItems");
+      var ingredients = doc.data().ingredients;
       var item = pendingItems[index];
       if (newStatus == "Preparing") {
         item.itemStatus = 2;
       }else{
         item.itemStatus = 3;
+        subtractIngredients(ingredients, qty);
       }
       pendingItems[index] = item;
       db.collection("Orders").doc(id).update({pendingItems: pendingItems});
     });
   });
+}
+
+function subtractIngredients(ingredients, multiplier){
+	if (ingredients != null) {
+		ingredients.forEach((ingredient) =>{
+			var value = +multiplier * +(ingredient.qty);
+			const ingredUnits = ingredient.units;
+			const id = ingredient.id;
+			InventoryRef.doc(id).get().then((doc) =>{
+				const toUnit = doc.data().units;
+				var remaining = doc.data().remainingItems;
+				if (toUnit != "qty" && convert(value, fromUnit, toUnit) != null) {
+					value = convert(value, fromUnit, toUnit);
+				}
+				remaining = +remaining - +value;
+				InventoryRef.doc(id).update(remainingItems: remaining);
+			});
+		});
+	}
 }
 
 function prepareKitchenOrders(parent){
@@ -903,9 +931,13 @@ function addItemsKitchen(parent, items, dates){
               Waiters page
 =======================================*/
 function loadWaiters(){
+  var d = new Date();
+  d.setHours(0,0,0,0);
+  d.setDate(14);
+  var mQuery = db.collection("Orders").where("tableOpenedAt", ">", d);
   var parent = $('#waiter_order_items');
   localStorage.setItem("isNewOrder", true);
-  prepareWaiterTables();
+  prepareWaiterTables(mQuery);
   // prepareWaiterOrders(parent);
 
   $('#table_row').on('click', '.table', function(){
@@ -928,12 +960,21 @@ function loadWaiters(){
     sessionStorage.setItem("selectedTableId", id);
     window.location.href = "posHome.html";
   });
+
+  $('#select_waiter').on('change', function(){
+  	var selected = $(this).val();
+  	if (selected == "All") {
+  		mQuery = db.collection("Orders").where("tableOpenedAt", ">", d);
+  	}else{
+  		mQuery = db.collection("Orders").where("tableOpenedAt", ">", d).where("servedBy", "==", selected);
+  	}
+  	prepareWaiterTables(mQuery);
+  });
 }
-function prepareWaiterTables(){
+
+function prepareWaiterTables(PassedQuery){
   $('#table_row').empty();
-  var d = new Date();
-  d.setHours(0,0,0,0);
-  db.collection("Orders").where("tableOpenedAt", ">", d).where("isTableOpen", "==", true).orderBy("tableOpenedAt", "asc")
+  PassedQuery.where("isTableOpen", "==", true).orderBy("tableOpenedAt", "asc")
   .onSnapshot(function(querySnapshot) {
     $('#table_row').empty();
     var previouslyReady = JSON.parse(localStorage.getItem("readyOrders"));
@@ -947,6 +988,8 @@ function prepareWaiterTables(){
       var table = doc.get("table");
       var pendingItems = doc.get("pendingItems");
       var waiterName = doc.get("servedBy");
+      var orderDate = doc.get("tableOpenedAt").toDate();
+      orderDate = moment(orderDate).format('DD/MM/YYYY HH:mm');
       var orderId = doc.id;
       var preparing = 0;
       var ready = 0;
@@ -986,7 +1029,11 @@ function prepareWaiterTables(){
       localStorage.setItem("readyOrders", JSON.stringify(previouslyReady));
       var html = '<div class="col-sm-3">\
                       <div class="table" '+style+'>\
-                        <div class="name-and-table"><span>'+waiterName+'</span><span class="w3-right">T'+table+'</span></div>\
+                        <div class="name-and-table">\
+                        <span>'+waiterName+'</span>\
+                        <span class="w3-center" style="font-size: 80%; padding: 5px;">'+orderDate+'</span>\
+                        <span class="w3-right">T'+table+'</span>\
+                      </div>\
                         <div class="status-and-totals w3-center">\
                           <h2 class="status ready">'+ready+' Ready</h2>\
                           <h2 class="status">'+preparing+' Preparing</h2>\
@@ -1584,6 +1631,7 @@ function printBill(){
     return;
   }
   var date = new Date();
+  date.setDate(14);
   var str = moment(date).format('MMM D, YYYY: H:mm');
   $('#bill_date').text(str);
   $('.bill-amounts').children().hide();
@@ -1604,6 +1652,7 @@ function printReciept(printTwo){
     return;
   }
   var date = new Date();
+  date.setDate(14);
   var str = moment(date).format('MMM D, YYYY: H:mm');
   $('#bill_date').text(str);
   $('.bill-amounts').children().hide();
@@ -1831,7 +1880,14 @@ function loadSalesPage(userSigned) {
     while(table.rows.length > 2) {
       table.deleteRow(1);
     }
-    db.collection("Orders").where("tableOpenedAt", ">", d).where("servedBy", "==", empNumber)
+    var mDate = new Date();
+    mDate.setHours(0,0,0,0);
+    var eDate = new Date();
+    eDate.setHours(0,0,0,0);
+    eDate.setDate(15);
+    mDate.setDate(14);
+    $('#waiter_sale_date').text(mDate.toLocaleDateString());
+    db.collection("Orders").where("tableOpenedAt", ">", mDate).where("tableOpenedAt", "<", eDate).where("servedBy", "==", empNumber)
     .get().then((querySnapshot) =>{
       $('#n_tables_served').text(querySnapshot.size);
       dailyTotal = 0;
@@ -2276,6 +2332,7 @@ function cashUpReceipt(dailyTotal){
   $('#cashUpSection').show();
   $('.WaiterName').text(currEmplName);
 	var inputs = $('.cash-money').find('input');
+	$('#CashBills').empty();
 	var cashTotal = 0;
 	for (var i = 0; i < inputs.length; i++) {
 		var input = inputs[i];
@@ -2333,6 +2390,35 @@ function cashUpReceipt(dailyTotal){
 /*======================================
               Multi Pages
 =======================================*/
+function convert(value, fromUnit, toUnit){
+	const from_kl = {kl: 1, l: 1000, ml: 1000000};
+	const from_l = {kl: 0.001, l: 1, ml: 1000};
+	const from_ml = {kl: 0.000001, l: 0.001, ml: 1};
+	const from_kg = {kg: 1, g: 1000, mg: 1000000};
+	const from_g = {kg: 0.001, g: 1, mg: 1000};
+	const from_mg = {kg: 0.000001, g: 0.001, mg: 1};
+
+	const liquidUnits = {kl: from_kl, l: from_l, ml: from_ml};
+	const massUnits = {kg: from_kg, g: from_g, mg: from_mg};
+
+	var returnValue = null;
+	if (massUnits.hasOwnProperty(fromUnit) && massUnits.hasOwnProperty(toUnit)) {
+		massConversion();
+	}else if (liquidUnits.hasOwnProperty(fromUnit) && liquidUnits.hasOwnProperty(toUnit)) {
+		liquidConversion();
+	}
+
+	function massConversion(){
+		returnValue = +value * massUnits[fromUnit][toUnit];
+	}
+
+	function liquidConversion(){
+		returnValue = +value * liquidUnits[fromUnit][toUnit];
+	}
+
+	return returnValue;
+}
+
 function clockCount(element, hours, minutes, seconds) {
     // Fetch the display element
     var el = element;
