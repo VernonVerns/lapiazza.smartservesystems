@@ -719,41 +719,115 @@
 	display: flex;
 }
 
-#kitchen_orders .requests_section {
+#kitchen_orders .main_section .main-sec {
+	width:75%; 
+	height: 90vh;
+}
+
+#kitchen_orders .main_section .request-sec {
+	width:25%; 
+	height: 90vh;
 	margin-left: auto;
 	margin-right: auto;
-	max-width: 30%;
 	justify-content: center;
 	align-items: center;
+	border-left: 1px solid #f2f2f2;
+	overflow-y: auto; 
+	padding: 0.5em;
 }
 
 #kitchen_orders .req_title {
 	width: 100%;
-	color: #fff;
+	color: #222;
 	margin-top: 5px;
 	margin-bottom: 10px;
-	border-radius: 5px;
 	text-align: center;
-	background-color: #336699;
-	border: 1px solid #336699;
-	padding-left: 70px;
-	padding-right: 70px;
+	font-weight: 700;
+	font-size: 25px;
+	padding: 0.2em;
 }
 
-#kitchen_orders .request_card {
-	border-radius: 5px;
-	border: 1px solid #336699;
+#kitchen_orders .request-card {
 	margin-left: auto;
 	margin-right: auto;
-	margin-bottom: 10px
+	margin-bottom: 10px;
+	border-bottom: 1px solid #f8f7f7;
+	padding: 0.5em;
 }
 
-#kitchen_orders .request_card .header {
+#kitchen_orders .request-card .header {
 	display: inline-block;
 	padding: 5px;
 	background-color: #336699;
 	color: #fff;
 	width: 100%;
+}
+
+#kitchen_orders .request-card .order-header {
+	background-color: #369;
+	display: flex;
+	align-items: center;
+	width: 100%;
+	padding: 0.3em 0.8em;
+	position: relative;
+}
+
+#kitchen_orders .request-card .order-header .table-number {
+	background-color: rgb(255,255,255,0.2);
+	padding: 5px 8px;
+	font-family: 'Roboto', sans-serif;
+	font-weight: 700;
+	border-radius: 5px;
+	color: #FFF;
+}
+
+#kitchen_orders .request-card .order-header .waiter-name {
+	font-family: 'Roboto', sans-serif;
+	font-weight: 500;
+	font-size: 14px;
+	color: #e6e6e6;
+	margin-top: 0px !important;
+	right: 10px;
+	top: 10px;
+}
+
+#kitchen_orders .request-card ul {
+	margin: 15px;
+}
+
+#kitchen_orders .request-card ul li {
+	font-size: 18px;
+	font-weight: 600;
+}
+
+#kitchen_orders .request-card .request-control {
+	display: flex;
+	align-items: center;
+	border-top: 1px solid #f8f8f8;
+	padding: 0.5em 0.3em;
+	margin-top: 5px;
+	position: relative;
+}
+
+#kitchen_orders .request-card .request-control .time {
+	font-family: 'Roboto', sans-serif;
+	font-size: 16px;
+	font-weight: 600;
+	color: #444;
+}
+
+#kitchen_orders .request-card .request-control button {
+	border: 0;
+	padding: 0.3em 0.5em;
+	font-family: 'Roboto', sans-serif;
+	font-weight: 600;
+	width: 100px;
+	box-shadow: 0 2px 3px rgba(0,0,0,0.19);
+	color: #fff;
+	position: absolute;
+	right: 10px;
+	background-color: #336699;
+	top: 5px;
 }
 
 .waiter-name {
@@ -762,22 +836,6 @@
 	color: #f2f2f2;
 	position: absolute;
 	margin-top: -20px !important;
-}
-
-#kitchen_orders .request_card .header h2 {
-	text-align: left;
-}
-
-#kitchen_orders .request_card .header #req_clock {
-	margin-top: -40px;
-	background-color: #336699;
-	padding: 5px;
-	color: #fff;
-}
-
-#kitchen_orders .request_card .request_items {
-	padding-left: 5px;
-	padding-right: 5px;
 }
 
 .b-right {

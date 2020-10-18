@@ -1006,7 +1006,7 @@ function addItemsKitchen(parent, items, dates){
 function loadWaiters(){
   var d = new Date();
   d.setHours(0,0,0,0);
-  var mQuery = db.collection("Orders").where("tableOpenedAt", ">", d);
+  var mQuery = db.collection("Orders").where("tableOpenedAt", "==", d);
   var parent = $('#waiter_order_items');
   localStorage.setItem("isNewOrder", true);
   prepareWaiterTables(mQuery);
