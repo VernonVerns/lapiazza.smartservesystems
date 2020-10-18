@@ -11,6 +11,7 @@ var currentOrder = null;
 var clickedPending = null;
 var selectedTable = null;
 var voidingTable = null;
+var discounted = 0;
 var previousTip = 0;
 var tip = 0;
 var requestItems = [];
@@ -22,6 +23,7 @@ var adminsList = [];
 var supervisorList = [];
 var isAdminCheck = false;
 var ballance = 0;
+var billTotal = 0;
 var payments = [];
 var alreadyPaid = 0;
 var page = "";
@@ -30,10 +32,13 @@ var isOrder = false;
 var authRun = null;
 var currEmpl;
 var currEmplName = "Unattended";
+var userSigned = null;
 var parent;
 var table = null;
-var InventoryRef = db.collection("LaPiazzaInventory");
-var EmployeesRef = db.collection("Employees");
+const InventoryRef = db.collection("LaPiazzaInventory");
+const MenuRef = db.collection("LaPiazzaMenu");
+const EmployeesRef = db.collection("Employees");
+const OrdersRef = OrdersRef;
 var total = $('#total_home').text().trim();
 var totalQty = $('#total_qty_home').text().trim();
 var totalQtyHtml = document.getElementById('total_qty_home');
@@ -157,7 +162,7 @@ window.onload = function(){
 
 function loadHome(){
   showLoader();
-  db.collection("LaPiazzaMenu").doc("categories").get().then((doc) => {
+  MenuRef.doc("categories").get().then((doc) => {
     mainCateList = doc.get("categories");
     for (var i = 0; i < mainCateList.length; i++) {
       var category = mainCateList[i];
@@ -266,12 +271,12 @@ $('#item_container').on('click', '#decrease_home', function(){
 }
 
 function addMainCategories(category){
-  var html = '<li class="item">\
-                <a data-toggle="pill" class="active" href="#cate1" style="margin-right: 10px;">\
-                  <img src="img/all.png" alt="all categories" width="50%">\
-                  <h4>' + category + '</h4>\
-                </a>\
-              </li>';
+  var html = `<li class="item">
+                <a data-toggle="pill" class="active" href="#cate1" style="margin-right: 10px;">
+                  <img src="img/all.png" alt="all categories" width="50%">
+                  <h4>' ${category} '</h4>
+                </a>
+              </li>`;
   $('#main_cats').append(html);
 }
 
@@ -290,7 +295,7 @@ function selectMainCat(i){
 function selectSubCat(criteria){
   console.log(criteria);
   $('#item_container').empty();
-  db.collection("LaPiazzaMenu").where("subCate", "==", criteria)
+  MenuRef.where("subCate", "==", criteria)
   .where("available", "==", true).orderBy("name")
   .get().then((querySnapshot) => {
     var images = [];
@@ -370,7 +375,7 @@ function loadCart(){
   }
   if (isNewOrder == 'false') {
     addToOrder = localStorage.getItem("addMoreTo");
-    db.collection("Orders").doc(addToOrder).get().then((doc) =>{
+    OrdersRef.doc(addToOrder).get().then((doc) =>{
       newItems = doc.get("pendingItems");
       var total = doc.get("total");
       var balance = doc.get("ballance");
@@ -447,7 +452,7 @@ function loadCart(){
   //Place the order so that it displays in kitchen
   $('#place_order').on('click', function(event){
     event.preventDefault();
-    var NumLoc = db.collection("LaPiazzaMenu").doc("categories");
+    var NumLoc = MenuRef.doc("categories");
     var itemStatus = 1;
     var itemsDetails = [];
     var orderTotal = 0;
@@ -488,7 +493,7 @@ function loadCart(){
             orderNum = 100;
           }
           orderNum++;
-          db.collection("Orders").doc(myId).set({
+          OrdersRef.doc(myId).set({
             tableOpenedAt: firebase.firestore.Timestamp.fromDate(new Date()),
             table: table,
             number: orderNum,
@@ -521,7 +526,7 @@ function loadCart(){
           newTotal = (+newTotal + +item.subTotal).toFixed(2);
         }
         var newBalance = (+newTotal - +alreadyPaid).toFixed(2);
-        db.collection("Orders").doc(addToOrder).update({pendingItems: allItems, table: table, 
+        OrdersRef.doc(addToOrder).update({pendingItems: allItems, table: table, 
           total: newTotal, ballance: newBalance}).then(function(){
           localStorage.setItem("isNewOrder", true);
           hideLoader();
@@ -615,7 +620,7 @@ function resetAtMidnight() {
 }
 
 function resetOrderNumber(){
-  var NumLoc = db.collection("LaPiazzaMenu").doc("categories");
+  var NumLoc = MenuRef.doc("categories");
   var startOrderNumber = 100;
   NumLoc.update({orderNumber: orderNum});
 }
@@ -629,7 +634,7 @@ function loadOrderHistory(){
   $('#ordered_item_container').on('click', '#repeat_order', function(){
     var orderId = $(this).closest('.header').find('#order_id')[0].innerHTML;
     console.log(orderId);
-    db.collection("Orders").doc(orderId).get().then((doc) => {
+    OrdersRef.doc(orderId).get().then((doc) => {
       var orderNum = 2102;
       var itemsDetails = doc.get("items");
       var orderTotal = doc.get("total");
@@ -644,7 +649,7 @@ function loadOrderHistory(){
 
 function placeOrder(table, orderNum, itemsDetails, orderTotal){
   var myId = new Date().getTime().toString();
-  db.collection("Orders").doc(myId).set({
+  OrdersRef.doc(myId).set({
     orderedAt: firebase.firestore.Timestamp.fromDate(new Date()),
     table: table,
     number: orderNum,
@@ -677,7 +682,7 @@ function prepareOrderHistory(){
   }
   for (var i = orderHistory.length - 1; i >= 0; i--) {
     var order = orderHistory[i];
-    db.collection("Orders").doc(order).get().then((doc) =>{
+    OrdersRef.doc(order).get().then((doc) =>{
       items = doc.get("items");
       var status = doc.get("orderStatus");
       var total = doc.get("total");
@@ -777,7 +782,7 @@ function loadKitchen(){
     var qty = $(this).closest('.order').find('.name-and-price').text().trim();
     qty = qty.split('x');
     qty = qty[0];
-    db.collection("Orders").doc(id).get().then((doc) =>{
+    OrdersRef.doc(id).get().then((doc) =>{
       var pendingItems = doc.get("pendingItems");
       var ingredients = doc.data().ingredients;
       var item = pendingItems[index];
@@ -788,7 +793,7 @@ function loadKitchen(){
         subtractIngredients(ingredients, qty);
       }
       pendingItems[index] = item;
-      db.collection("Orders").doc(id).update({pendingItems: pendingItems});
+      OrdersRef.doc(id).update({pendingItems: pendingItems});
     });
   });
 }
@@ -802,18 +807,18 @@ function subtractIngredients(ingredients, multiplier){
 			InventoryRef.doc(id).get().then((doc) =>{
 				const toUnit = doc.data().units;
 				var remaining = doc.data().remainingItems;
-				if (toUnit != "qty" && convert(value, fromUnit, toUnit) != null) {
-					value = convert(value, fromUnit, toUnit);
+				if (toUnit != "qty" && convert(value, ingredUnits, toUnit) != null) {
+					value = convert(value, ingredUnits, toUnit);
 				}
-				remaining = +remaining - +value;
-				InventoryRef.doc(id).update(remainingItems: remaining);
+				remaining = (+remaining - +value).toFixed(2);
+				InventoryRef.doc(id).update({remainingItems: remaining});
 			});
 		});
 	}
 }
 
 function prepareKitchenOrders(parent){
-  db.collection("Orders").where("tableOpenedAt", ">", d).where("isTableOpen", "==", true).orderBy("tableOpenedAt", "asc")
+  OrdersRef.where("tableOpenedAt", ">", d).where("isTableOpen", "==", true).orderBy("tableOpenedAt", "asc")
   .onSnapshot(function(querySnapshot) {
     $('#kitchen_order_items').empty();
     if (querySnapshot.size == 0) {
@@ -934,7 +939,7 @@ function loadWaiters(){
   var d = new Date();
   d.setHours(0,0,0,0);
   d.setDate(14);
-  var mQuery = db.collection("Orders").where("tableOpenedAt", ">", d);
+  var mQuery = OrdersRef.where("tableOpenedAt", ">", d);
   var parent = $('#waiter_order_items');
   localStorage.setItem("isNewOrder", true);
   prepareWaiterTables(mQuery);
@@ -964,9 +969,9 @@ function loadWaiters(){
   $('#select_waiter').on('change', function(){
   	var selected = $(this).val();
   	if (selected == "All") {
-  		mQuery = db.collection("Orders").where("tableOpenedAt", ">", d);
+  		mQuery = OrdersRef.where("tableOpenedAt", ">", d);
   	}else{
-  		mQuery = db.collection("Orders").where("tableOpenedAt", ">", d).where("servedBy", "==", selected);
+  		mQuery = OrdersRef.where("tableOpenedAt", ">", d).where("servedBy", "==", selected);
   	}
   	prepareWaiterTables(mQuery);
   });
@@ -1054,7 +1059,7 @@ function prepareWaiterTables(PassedQuery){
 }
 
 function serveOrder () {
-  var clickedOrder = db.collection("Orders").doc(attendantCliked);
+  var clickedOrder = OrdersRef.doc(attendantCliked);
   clickedOrder.get().then((doc) =>{
     var status = doc.get("orderStatus");
     if (status == 3) {
@@ -1075,7 +1080,7 @@ function respondRequest (){
 function prepareWaiterOrders(parent){
   var d = new Date();
   d.setHours(0,0,0,0);
-  db.collection("Orders").where("orderedAt", ">", d).orderBy("orderedAt", "asc")
+  OrdersRef.where("orderedAt", ">", d).orderBy("orderedAt", "asc")
   .onSnapshot(function(querySnapshot) {
     $('#waiter_order_items').empty();
     var orderItems = [];
@@ -1212,7 +1217,7 @@ function loadOrderDetails(){
   $('.served-items').empty();
   var id = sessionStorage.getItem("selectedTableId");
   var selectdOrder = null;
-  db.collection("Orders").doc(id).get().then((doc) =>{
+  OrdersRef.doc(id).get().then((doc) =>{
     selectdOrder = doc.data();
     var pendingItems = doc.get("pendingItems");
     var servedItems = doc.get("servedItems");
@@ -1339,7 +1344,7 @@ function loadOrderDetails(){
     var id = clickedPending.orderId;
     console.log(index);
     console.log(id);
-    db.collection("Orders").doc(id).get().then((doc) =>{
+    OrdersRef.doc(id).get().then((doc) =>{
       var pendingItems = doc.get("pendingItems");
       var servedItems = doc.get("servedItems");
       if (servedItems == null) {
@@ -1350,7 +1355,7 @@ function loadOrderDetails(){
       item.itemStatus = 4;
       servedItems.push(item);
       pendingItems.splice(index, 1);
-      db.collection("Orders").doc(id).update({pendingItems: pendingItems, servedItems: servedItems})
+      OrdersRef.doc(id).update({pendingItems: pendingItems, servedItems: servedItems})
       .then(function(){
         hideLoader();
         window.location.reload();
@@ -1376,14 +1381,14 @@ function voidItem (voider){
       var id = clickedPending.orderId;
       var price = clickedPending.price;
       var index = clickedPending.index;
-      db.collection("Orders").doc(id).get().then((doc) =>{
+      OrdersRef.doc(id).get().then((doc) =>{
         var pendingItems = doc.get("pendingItems");
         var total = doc.get("total");
         var ballance = doc.get("ballance");
         total = (+total - +price).toFixed(2);
         ballance = (+ballance - +price).toFixed(2);
         pendingItems.splice(index, 1);
-        db.collection("Orders").doc(id).update({pendingItems: pendingItems, total: total, ballance: ballance});
+        OrdersRef.doc(id).update({pendingItems: pendingItems, total: total, ballance: ballance});
       }).then(function(){
         db.collection("LaPiazzaVoids").doc().set({
           itemName: name,
@@ -1427,7 +1432,7 @@ function voidTable(voider){
   }
 
   setTimeout(function(){
-    db.collection("Orders").doc(voidingTable.id).delete().then(function(){
+    OrdersRef.doc(voidingTable.id).delete().then(function(){
       hideLoader();
       window.location.href = "kitchenWaiters.html";
     }, 3000);
@@ -1517,11 +1522,10 @@ function loadPos(){
     if (tip == null || tip == "" || tip == 0) {
       tip = 0;
       ballance = (+ballance - +previousTip).toFixed(2);
-      console.log("minus");
     }else{
       ballance = (+ballance + +tip).toFixed(2);
     }
-    db.collection("Orders").doc(id).update({tip: tip});
+    OrdersRef.doc(id).update({tip: tip});
     $('#phd_ballance').val(ballance);
   });
   
@@ -1530,7 +1534,7 @@ function loadPos(){
     if (ballance == null || ballance == "") {
       ballance = 0;
     }
-    db.collection("Orders").doc(id).update({ballance: ballance});
+    OrdersRef.doc(id).update({ballance: ballance});
   });
 
   $('#side_buttons').on('click', 'div', function(){
@@ -1541,6 +1545,9 @@ function loadPos(){
         break;
       case "Clear":
         amountEntered = (0).toFixed(2);
+        break;
+      case "Discount":
+        openDiscountModal(billTotal);
         break;
       case "Print Bill":
         printBill();
@@ -1580,8 +1587,8 @@ function loadPos(){
         ballance = (+ballance - +amount).toFixed(2);
         var change = (0).toFixed(2);
         paid = (+paid + +amount).toFixed(2);
-        db.collection("Orders").doc(orderId)
-        .update({payments: payments, paid: paid, ballance: ballance, isPaid: isPaid})
+        OrdersRef.doc(orderId)
+        .update({payments: payments, paid: paid, ballance: ballance, discount: discounted, isPaid: isPaid})
         .then(function(){
           hideLoader();
         	$('#phd_change').text(change);
@@ -1601,11 +1608,13 @@ function loadPos(){
         ballance = 0;
         $('#phd_change').text(change);
         $('#phd_ballance').val("0.00");
-        db.collection("Orders").doc(orderId)
-        .update({isTableOpen: false, payments: payments, paid: paid, ballance: 0, isPaid: isPaid})
+        OrdersRef.doc(orderId)
+        .update({isTableOpen: false, payments: payments, paid: paid, ballance: 0, discount: discounted, isPaid: isPaid})
         .then(function(){
           hideLoader();
-        });
+        }).catch((error)=>{
+            hideLoader();
+        });;
       }
       amountEntered = 0;
       $('#phd_paid').text(amount);
@@ -1662,7 +1671,9 @@ function printReciept(printTwo){
   var cashPaid = 0;
   var voucherPaid = 0;
   if (payments == null) {
-    alert("Please make a payment first or Print Bill instead.");
+    // alert("Please make a payment first or Print Bill instead.");
+    payments = [];
+    payments.push({amount: 200, method: "Cash"});
     return;
   }
   for (var i = 0; i < payments.length; i++) {
@@ -1683,6 +1694,10 @@ function printReciept(printTwo){
     totalPaid = (+totalPaid + +amount).toFixed(2);
   }
   $('.receiptTip').text(tip);
+  if(discounted != null && discounted > 0){
+      var discountHtml = `<h4>Discount:<span class="w3-right ss-b-mr">${discounted}</span></h4>`;
+      $('.bill-amounts').append(discountHtml);
+  }
   if (cashPaid > 0) {
     var cashHtml = '<h4>Cash:<span class="w3-right ss-b-mr">'+cashPaid+'</span></h4>';
     $('.bill-amounts').append(cashHtml);
@@ -1733,7 +1748,7 @@ function keyInDigit(amountEntered, digit){
 }
 
 function selectOrderToPay(orderId){
-  db.collection("Orders").doc(orderId).get().then((doc) =>{
+  OrdersRef.doc(orderId).get().then((doc) =>{
   $('#pos_selected_order').empty();
     orderedItems = [];
     var pendingItems = doc.get("pendingItems");
@@ -1792,7 +1807,7 @@ function addItemsToPosOrder(orderedItems){
   var children = $('#pos_selected_order').children();
   $(child).find('#order_item_container').empty();
   $('.bill-items').empty();
-  var billTotal = 0;
+  billTotal = 0;
   for (var i = orderedItems.length - 1; i >= 0; i--) {
     var child = children[0];
     var order = orderedItems[i];
@@ -1887,7 +1902,7 @@ function loadSalesPage(userSigned) {
     eDate.setDate(15);
     mDate.setDate(14);
     $('#waiter_sale_date').text(mDate.toLocaleDateString());
-    db.collection("Orders").where("tableOpenedAt", ">", mDate).where("tableOpenedAt", "<", eDate).where("servedBy", "==", empNumber)
+    OrdersRef.where("tableOpenedAt", ">", mDate).where("tableOpenedAt", "<", eDate).where("servedBy", "==", empNumber)
     .get().then((querySnapshot) =>{
       $('#n_tables_served').text(querySnapshot.size);
       dailyTotal = 0;
@@ -2083,7 +2098,7 @@ function dailySales(start, end){
   while(table.rows.length > 2) {
     table.deleteRow(1);
   }
-  db.collection("Orders").where("tableOpenedAt", ">", startDate).where("tableOpenedAt", "<", endDate)
+  OrdersRef.where("tableOpenedAt", ">", startDate).where("tableOpenedAt", "<", endDate)
   .orderBy("tableOpenedAt", "asc").onSnapshot(function(querySnapshot) {
     var dailyTotal = 0;
     var soldItems = [];
@@ -2127,7 +2142,7 @@ function monthlySales(month){
   while(table.rows.length > 2) {
     table.deleteRow(1);
   }
-  db.collection("Orders").where("tableOpenedAt", ">", firstDay).where("tableOpenedAt", "<", lastDay)
+  OrdersRef.where("tableOpenedAt", ">", firstDay).where("tableOpenedAt", "<", lastDay)
   .orderBy("tableOpenedAt", "asc").onSnapshot(function(querySnapshot) {
     var soldItems = [];
     var dailySales = [];
@@ -2472,7 +2487,6 @@ $("#authModal").keyup(function(event) {
 
 $('#verify_employee').on('click', function(){
   currEmpl = $('#authModal input').val();
-  var userSigned;
   var empIndex;
   var employee;
     empIndex = adminsList.findIndex((e) => e.emplNo === currEmpl);
@@ -2629,9 +2643,64 @@ function playSound(from){
 	});
 }
 
-/*=====================================
-          Loader wheel
-======================================*/
+function openDiscountModal(billTotal){
+	if (userSigned != "Admin") {
+		alert("Only Admins are allowed to offer a discount!");
+		return;
+	}
+	if ($('body').find('#discountModal').length == 0) {
+		var html = `<div id="discountModal" class="modal">
+		              <div class="modal-content">
+		                <span class="close">&times;</span>
+		                <p>Enter the discount amount</p>
+		                <div>
+		                	<input type="number" id="discountNum" placeholder="Discount"/>
+		                	<select>
+		                		<option disabled selected>Type</option>
+		                		<option>%</option>
+		                		<option>R</option>
+		                	</select>
+		                	<button class="w3-right" id="add_discount">Add</button>
+		                </div>
+		              </div>
+		            </div>`
+		$('body').append(html);
+	}
+	$('#discountModal').show();
+
+	$('.close').on('click', function(){
+		$('#discountModal').hide();
+	});
+
+	$('#add_discount').on('click', function(){
+		var discountAmount = $('#discountNum').val();
+		var type = $(this).closest('#discountModal').find('select').val();
+		if (type == null) {
+			showSnackbar("Invalid discount type!");
+			return;
+		}
+		if (discountAmount == "" || discountAmount < 1) {
+			showSnackbar("Discount should be more than zero!");
+			return;
+		}
+		discounted = 0;
+		if (type == "%") {
+			discounted = +discountAmount * 0.01 * +billTotal;
+		}else{
+			discounted = +discountAmount;
+		}
+		ballance = +ballance - discounted;
+		$('#phd_ballance').val(ballance);
+		showSnackbar("Balance: " + ballance);
+		$(this).closest('#discountModal').find('select').val(null);
+		$('#discountNum').val('');
+		$('#discountModal').hide();
+	});
+}
+
+/*===============================================================
+          				Loader wheel
+===============================================================*/
 function showLoader(){
   $("#loader").addClass("loader");
 }
