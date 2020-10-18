@@ -38,7 +38,7 @@ var table = null;
 const InventoryRef = db.collection("LaPiazzaInventory");
 const MenuRef = db.collection("LaPiazzaMenu");
 const EmployeesRef = db.collection("Employees");
-const OrdersRef = OrdersRef;
+const OrdersRef = db.collection("Orders");;
 var total = $('#total_home').text().trim();
 var totalQty = $('#total_qty_home').text().trim();
 var totalQtyHtml = document.getElementById('total_qty_home');
@@ -1017,6 +1017,7 @@ function loadWaiters(){
   var parent = $('#waiter_order_items');
   localStorage.setItem("isNewOrder", true);
   prepareWaiterTables(mQuery);
+  prepareRequests();
   // prepareWaiterOrders(parent);
 
   $('#table_row').on('click', '.table', function(){
@@ -1047,12 +1048,12 @@ function loadWaiters(){
   	}else{
   		mQuery = OrdersRef.where("tableOpenedAt", ">", d).where("servedBy", "==", selected);
   	}
-  	prepareWaiterTables(mQuery);
+    prepareWaiterTables(mQuery);
   });
 }
 function prepareWaiterTables(PassedQuery){
   $('#table_row').empty();
-  PassedQuery.where("isTableOpen", "==", true).orderBy("tableOpenedAt", "asc")
+  PassedQuery.where("isTableOpen", "==", true)
   .onSnapshot(function(querySnapshot) {
     $('#table_row').empty();
     var previouslyReady = JSON.parse(localStorage.getItem("readyOrders"));
@@ -1060,7 +1061,7 @@ function prepareWaiterTables(PassedQuery){
   		previouslyReady = [];
  		}
     if (querySnapshot.size == 0) {
-      $('#table_row').append('<h2 class="w3-center">No pending Requests.</h2>');
+      $('#table_row').append('<h2 class="w3-center">No pending Orders.</h2>');
     }
     querySnapshot.forEach((doc) =>{
       var table = doc.get("table");
@@ -1235,7 +1236,7 @@ function prepareWaiterOrders(parent){
 }
 
 function prepareRequests(){
-  db.collection("Requests").orderBy("requestedAt", "asc").where("responded", '==', false).onSnapshot(function(querySnapshot) {
+  db.collection("Requests").orderBy("requestedAt", "asc").where("responded", "==" , false).onSnapshot(function(querySnapshot) {
     var items = [];
     var dates = [];
     $('#kitchen_requests').empty();
@@ -1249,15 +1250,28 @@ function prepareRequests(){
       var time = doc.get("requestedAt").toDate();
       dates.push(time);
       items.push(itemsDetails);
-      var html = '<div class="request_card w3-card">\
-                    <div class="header">\
-                      <h2>Table #<span>'+table+'</span></h2>\
-                      <p class="w3-right" id="req_clock"></p>\
-                      <p hidden id="req_id">'+reqId+'</p>\
-                    </div>\
-                    <div class="request_items"></div>\
-                  </div>'
-      $('#kitchen_requests').append(html);
+      var html = `<div class="request-card">
+                    <div class="order-header">
+                        <span class="table-number">T-${table}</span>
+                        <div class="text-right">
+                            <span class="waiter-name">Simamkele</span>
+                        </div>
+                    </div>
+                    <ul class="list-unstyled">
+                        <li>Bill</li>
+                        <li>Toothpicks</li>
+                    </ul>
+
+                    <div class="request-control">
+                        <div>
+                            <span class="time">5:19</span>
+                        </div>
+                        <div class="w3-right">
+                            <button type="button" class="status-2">Attending</button>
+                        </div>
+                    </div>
+                </div>`
+      $('.requests_section').append(html);
     });
     setTimeout(function() { addRequestItems(items, dates); }, 2000);
   });
@@ -1268,6 +1282,7 @@ function addRequestItems(items, dates){
   for (var i = children.length - 1; i >= 0; i--) {
     var child = children[i];
     var item = items[i];
+    if(item == null)return;
     for (var w = 0; w < item.length; w++) {
       $(child).find('.request_items').append('<h4>'+item[w]+'</h4>')
     }
