@@ -2,7 +2,6 @@
 <html>
 <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>SmartServe | Waiter Screen</title>
-    
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <link rel="stylesheet" type="text/css" href="../css/w3.css">
     <link rel="stylesheet" type="text/css" href="../css/animate.css">
@@ -27,7 +26,8 @@
                 </div>
                 <div class="collapse navbar-collapse" id="myNavbar">
                     <ul class="nav navbar-nav navbar-right">
-                    	<li><a>
+                    	<li>
+                            <a>
                     			<select id="select_waiter" style="color: #fff; background-color: #336699;">
                 					<option>All</option>
                 				</select>
@@ -43,8 +43,23 @@
 
     <section id="kitchen_orders">
         <section id="odering_tables">
-            <div id="table_row" class="row">
-                <!-- Loading Tables here -->
+            <div class="w3-row">
+                <div class="w3-col" style="width: 70%; background-color: #222; height: 90vh;">
+                    <div id="table_row" class="row">
+                        <!-- Loading Tables here -->
+                    </div>
+                </div>
+                
+                <div class="w3-col" style="width:30%; background-color: black; height: 90vh;">
+                    <div class="requests_section">
+                        <div class="req_title">
+                            <h1>Requests</h1>
+                        </div>
+                        <div id="kitchen_requests">
+                            <!-- Do not Delete... Used to display requests to waiters -->
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </section>
