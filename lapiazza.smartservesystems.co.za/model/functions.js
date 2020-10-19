@@ -107,7 +107,7 @@ window.onload = function(){
     console.log("Current Order Not Saved");
   }
 
- db.collection("Employees").onSnapshot(function(querySnapshot) {
+ EmployeesRef.onSnapshot(function(querySnapshot) {
     querySnapshot.forEach((doc) => {
       var empNo = doc.get("empNumber");
       var position = doc.get("position");
