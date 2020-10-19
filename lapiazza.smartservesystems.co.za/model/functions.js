@@ -1146,9 +1146,17 @@ function serveOrder () {
 }
 
 function respondRequest (){
-  db.collection("Requests").doc(attendantCliked)
-  .update({responded: true, respondedBy: currEmpl});
-  currEmpl = null;
+  if(currEmpl == null){
+    authRun = respondRequest;
+    authModal.style.display = "block";
+    $('#empl_number').focus();
+  }else{
+    console.log(currEmpl)
+    db.collection("Requests").doc(attendantCliked)
+    .update({responded: true, respondedBy: currEmpl});
+    currEmpl = null;
+  }
+  
 }
 
 function prepareWaiterOrders(parent){
@@ -1239,9 +1247,9 @@ function prepareRequests(){
   db.collection("Requests").orderBy("requestedAt", "asc").where("responded", "==" , false).onSnapshot(function(querySnapshot) {
     var items = [];
     var dates = [];
-    $('#kitchen_requests').empty();
+    $('requests_section').empty();
     if (querySnapshot.size == 0) {
-      $('#kitchen_requests').append('<h2>No pending Requests.</h2>');
+      $('.requests_section').append('<h2 class="w3-center">No pending Requests.</h2>');
     }
     querySnapshot.forEach((doc) =>{
       var table = doc.get("table");
@@ -1253,7 +1261,6 @@ function prepareRequests(){
         tableWaiter = "Unassigned";
       }
       dates.push(time);
-      console.log(itemsDetails);
       items.push(itemsDetails);
       var html = `<div class="request-card">
                     <p hidden id="req_id">${reqId}</p>
@@ -1278,6 +1285,12 @@ function prepareRequests(){
     });
     setTimeout(function() { addRequestItems(items, dates); }, 2000);
   });
+
+  $('.requests_section').off('click').on('click', '.status-2', function(e){
+    const currReqId = $(this).closest('.request-card').find('#req_id')[0].innerHTML;
+    attendantCliked = currReqId;
+    respondRequest();
+  });
 }
 
 function addRequestItems(items, dates){
@@ -1287,7 +1300,6 @@ function addRequestItems(items, dates){
     var item = items[i];
     if(item != null){
       for (var w = 0; w < item.length; w++) {
-        console.log($(child).find('.request_items'));
         $(child).find('.request_items').append('<li>'+item[w]+'</li>')
       }
       var clockElem = $(child).find('#req_clock')[0];
