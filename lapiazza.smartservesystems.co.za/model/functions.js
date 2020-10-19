@@ -35,10 +35,22 @@ var currEmplName = "Unattended";
 var userSigned = null;
 var parent;
 var table = null;
-const InventoryRef = db.collection("LaPiazzaInventory");
-const MenuRef = db.collection("LaPiazzaMenu");
-const EmployeesRef = db.collection("Employees");
-const OrdersRef = db.collection("Orders");;
+//Use these when using main database
+// const InventoryRef = db.collection("LaPiazzaInventory");
+// const MenuRef = db.collection("LaPiazzaMenu");
+// const EmployeesRef = db.collection("Employees");
+// const OrdersRef = db.collection("Orders");;
+// const RequestsRef = db.collection("Requests");
+// const VoidsRef = db.collection("LaPiazzaVoids");
+
+//Use these with Test database
+const InventoryRef = db.collection("TestLaPiazzaInventory");
+const MenuRef = db.collection("TestLaPiazzaMenu");
+const EmployeesRef = db.collection("TestEmployees");
+const OrdersRef = db.collection("TestOrders");;
+const RequestsRef = db.collection("TestRequests");
+const VoidsRef = db.collection("TestLaPiazzaVoids");
+
 var total = $('#total_home').text().trim();
 var totalQty = $('#total_qty_home').text().trim();
 var totalQtyHtml = document.getElementById('total_qty_home');
@@ -1013,7 +1025,7 @@ function addItemsKitchen(parent, items, dates){
 function loadWaiters(){
   var d = new Date();
   d.setHours(0,0,0,0);
-  var mQuery = db.collection("Orders").where("tableOpenedAt", "==", d);
+  var mQuery = OrdersRef.where("tableOpenedAt", "==", d);
   var parent = $('#waiter_order_items');
   localStorage.setItem("isNewOrder", true);
   prepareWaiterTables(mQuery);
@@ -1152,7 +1164,7 @@ function respondRequest (){
     $('#empl_number').focus();
   }else{
     console.log(currEmpl)
-    db.collection("Requests").doc(attendantCliked)
+    RequestsRef.doc(attendantCliked)
     .update({responded: true, respondedBy: currEmpl});
     currEmpl = null;
   }
@@ -1244,7 +1256,7 @@ function prepareWaiterOrders(parent){
 }
 
 function prepareRequests(){
-  db.collection("Requests").orderBy("requestedAt", "asc").where("responded", "==" , false).onSnapshot(function(querySnapshot) {
+  RequestsRef.orderBy("requestedAt", "asc").where("responded", "==" , false).onSnapshot(function(querySnapshot) {
     var items = [];
     var dates = [];
     $('requests_section').empty();
@@ -1496,7 +1508,7 @@ function voidItem (voider){
         pendingItems.splice(index, 1);
         OrdersRef.doc(id).update({pendingItems: pendingItems, total: total, ballance: ballance});
       }).then(function(){
-        db.collection("LaPiazzaVoids").doc().set({
+        VoidsRef.doc().set({
           itemName: name,
           quantity: qty,
           orderId: id,
@@ -1549,7 +1561,7 @@ function continueVoid(voider, reason){
     var qty = item.quantity;
     var id = voidingTable.id;;
     var selectedTable = voidingTable.table;
-    db.collection("LaPiazzaVoids").doc().set({
+    VoidsRef.doc().set({
       itemName: name,
       quantity: qty,
       orderId: id,
@@ -2203,7 +2215,7 @@ function loadSigleWaiter(waiter){
   $('#daily').remove();
   $('#totalSales').remove();
   $('#voids').remove();
-  db.collection("Employees").where("name", "==", waiter).get().then((querySnapshot) =>{
+  EmployeesRef.where("name", "==", waiter).get().then((querySnapshot) =>{
     querySnapshot.forEach((doc) =>{
       var name = doc.get("name");
       var empNumber = doc.get("empNumber");
@@ -2316,7 +2328,7 @@ function monthlySales(month){
 }
 
 function waiterSales(){
-  db.collection("Employees").get().then((querySnapshot) =>{
+  EmployeesRef.get().then((querySnapshot) =>{
     querySnapshot.forEach((doc) =>{
       var name = doc.get("name");
       var empNumber = doc.get("empNumber");
@@ -2335,7 +2347,7 @@ function loadVoids(){
   while(table.rows.length > 2) {
     table.deleteRow(1);
   }
-  db.collection("LaPiazzaVoids").where("time", ">", startDate).where("time", "<", endDate)
+  VoidsRef.where("time", ">", startDate).where("time", "<", endDate)
   .orderBy("time", "desc").onSnapshot(function(querySnapshot) {
     querySnapshot.forEach((doc) =>{
       var name = doc.get("itemName");
@@ -2688,7 +2700,7 @@ $('#ss_request_modal').on('click', '#submit_request', function(){
     requestItems.push(text);
   }
   if (requestItems.length != 0) {
-    db.collection("Requests").doc().set({
+    RequestsRef.doc().set({
       requestedAt: firebase.firestore.Timestamp.fromDate(new Date()),
       items: requestItems,
       responded: false,
