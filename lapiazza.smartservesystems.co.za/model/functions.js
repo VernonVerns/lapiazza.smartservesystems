@@ -2548,7 +2548,6 @@ function clockCount(element, hours, minutes, seconds) {
     // Fetch the display element
     var el = element;
     var oldInterval = $(el).closest('.request-control').find('.intervalId')[0].innerHTML;
-    console.log(oldInterval);
     if (oldInterval != null || oldInterval != "") {
       clearInterval(oldInterval);
     }
