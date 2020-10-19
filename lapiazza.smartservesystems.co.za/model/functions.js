@@ -13,6 +13,7 @@ var selectedTable = null;
 var voidingTable = null;
 var discounted = 0;
 var previousTip = 0;
+var interval = null;
 var tip = null;
 var requestItems = [];
 var addToOrder = "";
@@ -1163,7 +1164,6 @@ function respondRequest (){
     authModal.style.display = "block";
     $('#empl_number').focus();
   }else{
-    console.log(currEmpl)
     RequestsRef.doc(attendantCliked)
     .update({responded: true, respondedBy: currEmpl});
     currEmpl = null;
@@ -1286,7 +1286,8 @@ function prepareRequests(){
 
                     <div class="request-control">
                         <div>
-                            <span class="time" id="req_clock">5:19</span>
+                            <span class="time" id="req_clock"></span>
+                            <p class="intervalId" hidden></p>
                         </div>
                         <div class="w3-right">
                             <button type="button" class="status-2">Attending</button>
@@ -2546,9 +2547,14 @@ function cashUpReceipt(dailyTotal){
 function clockCount(element, hours, minutes, seconds) {
     // Fetch the display element
     var el = element;
+    var oldInterval = $(el).closest('.request-control').find('.intervalId')[0].innerHTML;
+    console.log(oldInterval);
+    if (oldInterval != null || oldInterval != "") {
+      clearInterval(oldInterval);
+    }
 
     // Set the timer
-    var interval = setInterval(function() {
+    interval = setInterval(function() {
         if(seconds == 60) {
           minutes++;
           seconds = 0;
@@ -2577,9 +2583,10 @@ function clockCount(element, hours, minutes, seconds) {
           }
         }
         
-        
         seconds++;
     }, 1000);
+    
+    $(el).closest('.request-control').find('.intervalId')[0].innerHTML = interval;
 }
 
 // Auth Modal
