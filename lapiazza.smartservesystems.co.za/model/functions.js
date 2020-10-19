@@ -1246,25 +1246,28 @@ function prepareRequests(){
     querySnapshot.forEach((doc) =>{
       var table = doc.get("table");
       var reqId = doc.id;
-      var itemsDetails = doc.get("items");
+      var itemsDetails = doc.get("requestItems");
       var time = doc.get("requestedAt").toDate();
+      var tableWaiter = doc.tableWaiter;
+      if(tableWaiter == null){
+        tableWaiter = "Unassigned";
+      }
       dates.push(time);
+      console.log(itemsDetails);
       items.push(itemsDetails);
       var html = `<div class="request-card">
+                    <p hidden id="req_id">${reqId}</p>
                     <div class="order-header">
                         <span class="table-number">T-${table}</span>
                         <div class="text-right">
-                            <span class="waiter-name">Simamkele</span>
+                            <span class="waiter-name">${tableWaiter}</span>
                         </div>
                     </div>
-                    <ul class="list-unstyled">
-                        <li>Bill</li>
-                        <li>Toothpicks</li>
-                    </ul>
+                    <ul class="list-unstyled request_items"></ul>
 
                     <div class="request-control">
                         <div>
-                            <span class="time">5:19</span>
+                            <span class="time" id="req_clock">5:19</span>
                         </div>
                         <div class="w3-right">
                             <button type="button" class="status-2">Attending</button>
@@ -1278,22 +1281,25 @@ function prepareRequests(){
 }
 
 function addRequestItems(items, dates){
-  var children = $('#kitchen_requests').children();
+  var children = $('.requests_section').children();
   for (var i = children.length - 1; i >= 0; i--) {
     var child = children[i];
     var item = items[i];
-    if(item == null)return;
-    for (var w = 0; w < item.length; w++) {
-      $(child).find('.request_items').append('<h4>'+item[w]+'</h4>')
+    if(item != null){
+      for (var w = 0; w < item.length; w++) {
+        console.log($(child).find('.request_items'));
+        $(child).find('.request_items').append('<li>'+item[w]+'</li>')
+      }
+      var clockElem = $(child).find('#req_clock')[0];
+      var now = new Date();
+      var time = dates[i];
+      var diff = now - time;
+      var hours   = Math.floor(diff / 3.6e6);
+      var min = Math.floor((diff % 3.6e6) / 6e4);
+      var sec = Math.floor((diff % 6e4) / 1000);
+      clockCount(clockElem, hours, min, sec);
     }
-    var clockElem = $(child).find('#req_clock')[0];
-    var now = new Date();
-    var time = dates[i];
-    var diff = now - time;
-    var hours   = Math.floor(diff / 3.6e6);
-    var min = Math.floor((diff % 3.6e6) / 6e4);
-    var sec = Math.floor((diff % 6e4) / 1000);
-    clockCount(clockElem, hours, min, sec);
+    
   }
 }
 
@@ -2539,11 +2545,14 @@ function clockCount(element, hours, minutes, seconds) {
         }else{
           second_text = seconds;
         }
-        if (hours == 0) {
-          el.innerHTML = minute_text + ':' + second_text;
-        }else{
-          el.innerHTML = hours + ":" +minute_text + ':' + second_text;
+        if (el != null) {
+          if (hours == 0) {
+            el.innerHTML = minute_text + ':' + second_text;
+          }else{
+            el.innerHTML = hours + ":" +minute_text + ':' + second_text;
+          }
         }
+        
         
         seconds++;
     }, 1000);
