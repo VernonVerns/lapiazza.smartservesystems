@@ -1259,7 +1259,7 @@ function prepareRequests(){
   RequestsRef.orderBy("requestedAt", "asc").where("responded", "==" , false).onSnapshot(function(querySnapshot) {
     var items = [];
     var dates = [];
-    $('requests_section').empty();
+    $('.requests_section').empty();
     if (querySnapshot.size == 0) {
       $('.requests_section').append('<h2 class="w3-center">No pending Requests.</h2>');
     }
@@ -1310,6 +1310,7 @@ function addRequestItems(items, dates){
   var children = $('.requests_section').children();
   for (var i = children.length - 1; i >= 0; i--) {
     var child = children[i];
+    $(child).find('.request_items').empty();
     var item = items[i];
     if(item != null){
       for (var w = 0; w < item.length; w++) {
