@@ -1290,7 +1290,7 @@ function prepareRequests(){
                             <p class="intervalId" hidden></p>
                         </div>
                         <div class="w3-right">
-                            <button type="button" class="status-2">Attending</button>
+                            <button type="button" class="status-2">Attended</button>
                         </div>
                     </div>
                 </div>`
