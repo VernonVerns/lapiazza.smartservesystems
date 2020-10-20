@@ -286,12 +286,12 @@ $('#item_container').on('click', '#decrease_home', function(){
 }
 
 function addMainCategories(category){
-  var html = `<li class="item">
-                <a data-toggle="pill" class="active" href="#cate1" style="margin-right: 10px;">
-                  <img src="img/all.png" alt="all categories" width="50%">
-                  <h4>' ${category} '</h4>
-                </a>
-              </li>`;
+  var html = '<li class="item item-cat">\
+      <a data-toggle="pill" class="active" href="#cate1" style="margin-right: 10px;">\
+        <img src="img/all.png" alt="all categories" width="50%">\
+        <h4>' + category + '</h4>\
+      </a>\
+    </li>';
   $('#main_cats').append(html);
 }
 
