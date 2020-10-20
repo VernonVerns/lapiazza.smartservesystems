@@ -1026,7 +1026,7 @@ function addItemsKitchen(parent, items, dates){
 function loadWaiters(){
   var d = new Date();
   d.setHours(0,0,0,0);
-  var mQuery = OrdersRef.where("tableOpenedAt", "==", d);
+  var mQuery = OrdersRef.where("tableOpenedAt", ">", d);
   var parent = $('#waiter_order_items');
   localStorage.setItem("isNewOrder", true);
   prepareWaiterTables(mQuery);
@@ -1056,14 +1056,15 @@ function loadWaiters(){
   
   $('#select_waiter').on('change', function(){
   	var selected = $(this).val();
-  	if (selected == "All") {
-  		mQuery = OrdersRef.where("tableOpenedAt", ">", d);
-  	}else{
+  	if (selected != "All") {
   		mQuery = OrdersRef.where("tableOpenedAt", ">", d).where("servedBy", "==", selected);
+  	}else{
+  		mQuery = OrdersRef.where("tableOpenedAt", ">", d);
   	}
     prepareWaiterTables(mQuery);
   });
 }
+
 function prepareWaiterTables(PassedQuery){
   $('#table_row').empty();
   PassedQuery.where("isTableOpen", "==", true)
@@ -1072,7 +1073,8 @@ function prepareWaiterTables(PassedQuery){
     var previouslyReady = JSON.parse(localStorage.getItem("readyOrders"));
   	if (previouslyReady == null) {
   		previouslyReady = [];
- 		}
+     }
+     
     if (querySnapshot.size == 0) {
       $('#table_row').append('<h2 class="w3-center">No pending Orders.</h2>');
     }
