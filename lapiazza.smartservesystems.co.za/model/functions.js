@@ -32,7 +32,7 @@ var attendantCliked = "";
 var isOrder = false;
 var authRun = null;
 var currEmpl;
-var currEmplName = "Unattended";
+var currEmplName = "Unassigned";
 var userSigned = null;
 var parent;
 var table = null;
@@ -935,7 +935,7 @@ function prepareKitchenOrders(parent){
         }
         var waiterName = doc.servedBy;
         if (waiterName == null) {
-          waiterName = "Unattended";
+          waiterName = "Unassigned";
         }
         var orderId = doc.id;
         var tableHtml = '<div class="row">\
@@ -1191,7 +1191,7 @@ function prepareWaiterOrders(parent){
         var time = doc.get("orderedAt").toDate();
         var waiterName = doc.get("servedBy");
         if (waiterName == null) {
-          waiterName = "Unattended";
+          waiterName = "Unassigned";
         }
         var orderId = doc.id;
         var order = {id: orderId, servedBy: waiterName, table: table, items: items, 
@@ -1343,6 +1343,15 @@ function loadOrderDetails(){
     selectdOrder = doc.data();
     var pendingItems = doc.get("pendingItems");
     var servedItems = doc.get("servedItems");
+    var tableWaiter = selectdOrder.servedBy;
+    if (tableWaiter == "Unassigned") {
+      $('#accept_order').show();
+      $('#table_waiter_name').hide();
+    }else{
+      $('#accept_order').hide();
+      $('#table_waiter_name').text(tableWaiter);
+      $('#table_waiter_name').show(); 
+    }
     selectedTable = doc.get("table");
     if (servedItems == null || servedItems.length == 0) {
       $('.served-items').append('<h2>No items served yet</h2>');
@@ -1447,6 +1456,10 @@ function loadOrderDetails(){
         }
   });
 
+  $('#accept_order').off('click').on('click', function(){
+    acceptOrder();
+  });
+
   $('#void_table').on('click', function(){
     if (selectdOrder == null) {
       showSnackbar("Table not selected properly, void canceled");
@@ -1493,6 +1506,24 @@ function loadOrderDetails(){
     authModal.style.display = "block";
     $('#empl_number').focus();
   });
+}
+
+function acceptOrder(){
+  if (currEmplName == null || currEmplName == "Unassigned") {
+    authRun = acceptOrder;
+    authModal.style.display = "block";
+    $('#empl_number').focus();
+  } else {
+    var id = sessionStorage.getItem("selectedTableId");
+    var tableWaiter = currEmplName;
+    OrdersRef.doc(id).update({servedBy: tableWaiter}).then(()=>{
+      $('#accept_order').hide();
+      $('#table_waiter_name').text(tableWaiter);
+      $('#table_waiter_name').show(); 
+    }).catch((error)=>{
+      console.log(error);
+    });
+  }
 }
 
 function voidItem (voider){
