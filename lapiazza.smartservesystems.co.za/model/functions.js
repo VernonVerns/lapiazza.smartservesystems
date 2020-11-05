@@ -36,7 +36,9 @@ var currEmplName = "Unassigned";
 var userSigned = null;
 var parent;
 var table = null;
-//Use these when using main database
+/*======================================================
+          Use these when using main database
+=======================================================*/
 // const InventoryRef = db.collection("LaPiazzaInventory");
 // const MenuRef = db.collection("LaPiazzaMenu");
 // const EmployeesRef = db.collection("Employees");
@@ -44,7 +46,9 @@ var table = null;
 // const RequestsRef = db.collection("Requests");
 // const VoidsRef = db.collection("LaPiazzaVoids");
 
-//Use these with Test database
+/*======================================================
+          Use these with Test database
+=======================================================*/
 const InventoryRef = db.collection("TestLaPiazzaInventory");
 const MenuRef = db.collection("TestLaPiazzaMenu");
 const EmployeesRef = db.collection("TestEmployees");
@@ -952,6 +956,7 @@ function prepareKitchenOrders(parent){
          var qty = item.quantity;
          var name = item.name;
          var note = item.note;
+         var itemCat = item.subCat;
          var time = item.orderedAt.toDate();
          if (note == null) {
           note = "";
@@ -979,7 +984,7 @@ function prepareKitchenOrders(parent){
                             <div class="note-to-chef">'+note+'</div>\
                           </div>\
                         </div>';
-          if (itemStatus < 3) {
+          if ((itemCat != "Drinks" && itemCat != "Liquor") && itemStatus < 3) {
             $('#'+doc.id+'items').append(itemHtml);
             var clockElem = $('#'+doc.id+''+i+'time')[0];
             var now = new Date();
@@ -2581,9 +2586,12 @@ function cashUpReceipt(dailyTotal){
 function clockCount(element, hours, minutes, seconds) {
     // Fetch the display element
     var el = element;
-    var oldInterval = $(el).closest('.request-control').find('.intervalId')[0].innerHTML;
-    if (oldInterval != null || oldInterval != "") {
-      clearInterval(oldInterval);
+    var intervalElemArr = $(el).closest('.request-control').find('.intervalId');
+    if(intervalElemArr != null && intervalElemArr.length > 0){
+      var oldInterval = intervalElemArr[0].innerHTML;
+      if (oldInterval != null || oldInterval != "") {
+        clearInterval(oldInterval);
+      }
     }
 
     // Set the timer
@@ -2619,7 +2627,9 @@ function clockCount(element, hours, minutes, seconds) {
         seconds++;
     }, 1000);
     
-    $(el).closest('.request-control').find('.intervalId')[0].innerHTML = interval;
+    if (intervalElemArr.length > 0) {
+      $(el).closest('.request-control').find('.intervalId')[0].innerHTML = interval; 
+    }
 }
 
 // Auth Modal
