@@ -1126,7 +1126,7 @@ function prepareWaiterTables(PassedQuery){
       	}
       }
       localStorage.setItem("readyOrders", JSON.stringify(previouslyReady));
-      var html = '<div class="col-sm-3">\
+      var html = '<div class="col-sm-4">\
                       <div class="table" '+style+'>\
                         <div class="name-and-table">\
                         <span>'+waiterName+'</span>\
